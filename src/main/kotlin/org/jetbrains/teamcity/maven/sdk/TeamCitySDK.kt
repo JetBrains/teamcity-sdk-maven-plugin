@@ -8,54 +8,15 @@ package org.jetbrains.teamcity.maven.sdk
 
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
-import org.apache.maven.plugins.annotations.LifecyclePhase
 import org.apache.maven.plugins.annotations.Mojo
 import org.apache.maven.plugins.annotations.Parameter
-import org.apache.maven.plugins.annotations.ResolutionScope
 import java.io.File
-import java.io.FileWriter
-import java.io.IOException
 import java.util.Scanner
 import org.apache.maven.project.MavenProject
 import com.google.common.io.Files
-
-/**
- * Goal which touches a timestamp file.
- *
- * @deprecated Don't use!
- */
-Mojo( name = "touch", defaultPhase = LifecyclePhase.PROCESS_SOURCES )
-public class MyMojo() : AbstractMojo() {
-    /**
-     * Location of the file.
-     */
-    Parameter( defaultValue = "\${project.build.directory}", property = "outputDir", required = true )
-    private var outputDirectory: File? = null
-
-    override fun execute() {
-        val f = outputDirectory!!
-
-        if (!f.exists()) {
-            f.mkdirs()
-        }
-
-        val touch = File(f, "touch.txt")
-
-        var w: FileWriter? = null
-        try {
-            w = FileWriter(touch)
-            w?.write("touch.txt")
-        } catch (e: IOException) {
-            throw MojoExecutionException("Error creating file " + touch, e)
-        } finally {
-            try {
-                w?.close()
-            } catch (e: IOException) {
-                // ignore
-            }
-        }
-    }
-}
+import java.net.URLClassLoader
+import java.util.Properties
+import java.util.jar.JarFile
 
 
 public abstract class AbstractTeamCityMojo() : AbstractMojo() {
@@ -65,6 +26,48 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     Parameter( defaultValue = "\${project.build.directory}/servers/\${teamcity-version}", property = "teamcityDir", required = true )
     protected var teamcityDir: File? = null
 
+    Parameter( defaultValue = "\${teamcity-version}", property = "teamcityVersion", required = true)
+    protected var teamcityVersion: String = ""
+
+    protected fun checkTeamCityVersion() {
+        if (teamcityVersion.isEmpty()) {
+            throw MojoExecutionException("Could not determine TeamCity version. Please, set \${teamcity-version} property" +
+                    "in the project, or configure <teamcityVersion> parameter for the plugin.")
+        }
+    }
+
+    protected fun checkTeamCityDirectory() {
+        checkTeamCityVersion()
+        val dir = teamcityDir!!
+        if ( !dir.exists() || !looksLikeTeamCityDir(dir)) {
+
+        } else if (wrongTeamCityVersion(dir)) {
+            getLog()?.warn("TeamCity verison at [${dir.getAbsolutePath()}] is [${getTCVersion(dir)}]," +
+            "but project's uses [$teamcityVersion]")
+        }
+    }
+
+    protected fun looksLikeTeamCityDir(dir: File): Boolean = File(dir, "bin/runAll.sh").exists()
+
+    private fun wrongTeamCityVersion(dir: File) = getTCVersion(dir).equals(teamcityVersion)
+
+    protected fun getTCVersion(dir: File): String {
+        var commonAPIjar = File(dir, "webapps/ROOT/WEB-INF/lib/common-api.jar")
+        if (!commonAPIjar.exists() || !commonAPIjar.isFile()) {
+            throw MojoExecutionException("Can not read TeamCity version. Can not access [${commonAPIjar.getAbsolutePath()}]."
+            + "Check that [$dir] points to valid TeamCity installation")
+        } else {
+            //JarFile(commonAPIjar).getEntry("serverVersion.properties.xml")
+            val versionPropertiesStream = URLClassLoader(array(commonAPIjar.toURI().toURL())).getResourceAsStream("serverVersion.properties.xml")
+            try {
+                val props = Properties()
+                props.loadFromXML(versionPropertiesStream!!)
+                return props.get("Display_Version") as String
+            } finally {
+                versionPropertiesStream?.close()
+            }
+        }
+    }
 
     protected fun readOutput(process: Process): Int {
         val s = Scanner(process.getInputStream()!!)
