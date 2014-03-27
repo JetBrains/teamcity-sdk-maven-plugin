@@ -1,0 +1,5 @@
+<root>
+    <item name='org.apache.commons.compress.archivers.ArchiveEntry java.lang.String getName()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>
