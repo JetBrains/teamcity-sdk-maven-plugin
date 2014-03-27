@@ -14,7 +14,6 @@ import java.io.File
 import java.util.Scanner
 import org.apache.maven.project.MavenProject
 import com.google.common.io.Files
-import java.net.URLClassLoader
 import java.util.Properties
 import java.util.jar.JarFile
 
@@ -51,14 +50,17 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
     private fun wrongTeamCityVersion(dir: File) = getTCVersion(dir).equals(teamcityVersion)
 
-    protected fun getTCVersion(dir: File): String {
-        var commonAPIjar = File(dir, "webapps/ROOT/WEB-INF/lib/common-api.jar")
+    protected fun getTCVersion(teamcityDir: File): String {
+        var commonAPIjar = File(teamcityDir, "webapps/ROOT/WEB-INF/lib/common-api.jar")
+
+
         if (!commonAPIjar.exists() || !commonAPIjar.isFile()) {
             throw MojoExecutionException("Can not read TeamCity version. Can not access [${commonAPIjar.getAbsolutePath()}]."
-            + "Check that [$dir] points to valid TeamCity installation")
+            + "Check that [$teamcityDir] points to valid TeamCity installation")
         } else {
-            //JarFile(commonAPIjar).getEntry("serverVersion.properties.xml")
-            val versionPropertiesStream = URLClassLoader(array(commonAPIjar.toURI().toURL())).getResourceAsStream("serverVersion.properties.xml")
+            var jarFile = JarFile(commonAPIjar)
+            val zipEntry = jarFile.getEntry("serverVersion.properties.xml")!!
+            val versionPropertiesStream = jarFile.getInputStream(zipEntry)
             try {
                 val props = Properties()
                 props.loadFromXML(versionPropertiesStream!!)
