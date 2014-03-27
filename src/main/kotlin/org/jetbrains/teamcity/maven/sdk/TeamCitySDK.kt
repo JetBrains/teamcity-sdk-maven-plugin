@@ -74,7 +74,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     }
 
     private fun downloadTeamCity(targetDir: File = File(project!!.getBasedir(), "servers/$teamcityVersion")) {
-        val sourceURL = "http://www.website.com/information.asp"
+        val sourceURL = "http://download.jetbrains.com/teamcity/TeamCity-$teamcityVersion.tar.gz"
 
         getLog() info "Downloading and unpacking TeamCity from $sourceURL to ${targetDir.getAbsolutePath()}"
 
@@ -172,6 +172,13 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     }
 }
 
+
+Mojo(name = "init", aggregator = true)
+public class InitTeamCityMojo() : AbstractTeamCityMojo() {
+    override fun doExecute() {
+        getLog() info "Init finished"
+    }
+}
 
 Mojo(name = "start", aggregator = true)
 public class RunTeamCityMojo() : AbstractTeamCityMojo() {
