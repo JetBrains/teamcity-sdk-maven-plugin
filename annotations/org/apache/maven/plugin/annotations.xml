@@ -1,0 +1,5 @@
+<root>
+    <item name='org.apache.maven.plugin.AbstractMojo org.apache.maven.plugin.logging.Log getLog()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>
