@@ -1,0 +1,5 @@
+<root>
+    <item name='org.junit.rules.TemporaryFolder java.io.File newFolder(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>
