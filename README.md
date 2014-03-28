@@ -3,7 +3,9 @@ TeamCity SDK Maven plugin
 
 # General Info
 
-This Maven plugin works best when used with projects generated from [maven archetype](http://confluence.jetbrains.com/display/TCD8/Developing+Plugins+Using+Maven#DevelopingPluginsUsingMaven-MavenArchetypes) for TeamCity plugins.
+This Maven plugin allow to control TeamCity instance from command line. It will install developed plugin if it is available. 
+
+The plugin works best when used with projects generated from [maven archetype](http://confluence.jetbrains.com/display/TCD8/Developing+Plugins+Using+Maven#DevelopingPluginsUsingMaven-MavenArchetypes) for TeamCity plugins.
 
 If you have such a project, add:
 ```xml
@@ -40,3 +42,32 @@ Please note, that TeamCity's startup process is not instant and stop command sen
 
 # Plugin settings
 
+The plugin is highly configurable. See the list of options below, along with default values. "User properties" are used to pass values from commandline (e.g., ```mvn teamcity-sdk:init -DteamcityVersion=8.1.1```)
+
+- ```teamcityDir```	path to TeamCity installation. Relative path will be resolved against ```${project.baseDir}```
+ - Default value is: servers/${teamcity-version}
+ - User property is: teamcityDir
+
+- ```dataDirectory``` 	path to data directory to use with TeamCity. Relative path will be resolved against TeamCity installation path.
+ - Default value is: .datadir
+ - User property is: teamcityDataDir
+
+- ```teamcityVersion``` TeamCity version, e.g. 8.0
+ - Default value is: ${teamcity-version}
+ - User property is: teamcityVersion
+
+- ```serverDebugStr``` 	additional options that will be passed to TeamCity server on startup. Customize this property if you want to change debug port or other values
+ - Default value is: -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=10111 -Dteamcity.development.mode=true
+ - User property is: serverDebugStr
+
+- ```agentDebugStr``` 	additional options that will be passed to TeamCity agent on startup. Customize this property if you want to change debug port or other values
+ - Default value is: -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=10112
+ - User property is: agentDebugStr
+
+- ```downloadQuietly``` do not ask user and download TeamCity without any notifications
+ - Default value is: false
+ - User property is: downloadQuietly
+
+- ```teamcitySourceURL``` base part of URL that will be used to download TeamCity distribution. Plugin will append "/TeamCity-<version>.tar.gz" to it (e.g. http://download.jetbrains.com/teamcity/TeamCity-8.1.tar.gz)
+ - Default value is: http://download.jetbrains.com/teamcity
+ - User property is: downloadQuietly
