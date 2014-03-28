@@ -61,7 +61,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     }
 
     private fun downloadTeamCity(dir: File) {
-        if (downloadQuietly || askToDownload()) {
+        if (downloadQuietly || askToDownload(dir)) {
             teamcityDir = doDownloadTeamCity(dir)
         } else {
             throw MojoExecutionException("TeamCity distribution not found.")
@@ -78,8 +78,8 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
         }
     }
 
-    private fun askToDownload(): Boolean {
-        print("Download TeamCity $teamcityVersion to  ./servers/$teamcityVersion?: Y:")
+    private fun askToDownload(dir: File): Boolean {
+        print("Download TeamCity $teamcityVersion to  ${dir.getAbsolutePath()}?: Y:")
         val s = readLine()
         return s?.length == 0 || s?.toLowerCase()?.first() == 'y'
     }

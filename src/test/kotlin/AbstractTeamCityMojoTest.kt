@@ -31,6 +31,7 @@ public class TCMojoTest() : TestWithTempFiles() {
     public fun checkTeamCityWrongDirectory() {
         assertEquals(TCDirectoryState.BAD, MockTCMojo().checkDir(File("unexistingLocation")))
     }
+
     Test
     public fun unpackTeamcityArchive() {
         val mockTCMojo = MockTCMojo()
@@ -40,6 +41,17 @@ public class TCMojoTest() : TestWithTempFiles() {
         assertTrue(File(tempDirectory, "file.txt").exists())
     }
 
+    Test
+    public fun silentDownloadTeamCity() {
+        val tcDir = myTempFiles.newFolder("TC_DIR")
+        val mockTCMojo = MockTCMojo().setSilentDownload(true)
+                                     .setDownloadSource(File("src/test/resources").getAbsoluteFile().toURI().toURL().toString())
+                                     .setTeamCityDir(tcDir)
+
+        mockTCMojo.execute()
+
+        assertEquals(TCDirectoryState.GOOD, MockTCMojo().checkDir(tcDir))
+    }
 }
 
 
@@ -57,5 +69,20 @@ class MockTCMojo(ver: String = "8.0.2") : AbstractTeamCityMojo() {
 
     public fun unpack(archive: File, destination: File) {
         extractTeamCity(archive, destination)
+    }
+
+    public fun setSilentDownload(flag: Boolean): MockTCMojo {
+        downloadQuietly = flag
+        return this
+    }
+
+    public fun setDownloadSource(urlStr: String): MockTCMojo {
+        teamcitySourceURL = urlStr
+        return this
+    }
+
+    public fun setTeamCityDir(file: File): MockTCMojo {
+        teamcityDir = file
+        return this
     }
 }
