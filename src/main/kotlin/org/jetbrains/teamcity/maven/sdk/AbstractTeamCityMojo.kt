@@ -221,7 +221,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
         return if (isWindows())
             listOf("cmd", "/C", "bin\\runAll") + params
         else
-            listOf("/bin/bash", "bin/runAll") + params
+            listOf("/bin/bash", "bin/runAll.sh") + params
     }
 
     protected fun isWindows(): Boolean {

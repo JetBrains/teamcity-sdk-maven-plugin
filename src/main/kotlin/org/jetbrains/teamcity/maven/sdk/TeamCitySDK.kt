@@ -10,6 +10,7 @@ import org.apache.maven.plugins.annotations.Mojo
 import org.apache.maven.plugins.annotations.Parameter
 import java.io.File
 import com.google.common.io.Files
+import org.apache.commons.io.FileUtils
 
 
 Mojo(name = "init", aggregator = true)
@@ -50,7 +51,8 @@ public class RunTeamCityMojo() : AbstractTeamCityMojo() {
                 }).getAbsolutePath()
 
         if (packageFile.exists()) {
-            Files.copy(packageFile, File(File(effectiveDataDir), "plugins/" + pluginPackageName))
+            val dataDirFile = File(effectiveDataDir)
+            FileUtils.copyFile(packageFile, File(dataDirFile, "plugins/" + pluginPackageName))
         } else {
             getLog() warn "Target file [${packageFile.getAbsolutePath()}] does not exist. Nothing will be deployed. Did you forget 'package' goal?"
         }
