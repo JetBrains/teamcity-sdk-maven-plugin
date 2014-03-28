@@ -27,7 +27,7 @@ public class RunTeamCityMojo() : AbstractTeamCityMojo() {
     Parameter( defaultValue = ".datadir", property = "teamcityDataDir", required = true )
     private var dataDirectory: String = ""
 
-    Parameter( defaultValue = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=10111", property = "serverDebugStr", required = true)
+    Parameter( defaultValue = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=10111 -Dteamcity.development.mode=true", property = "serverDebugStr", required = true)
     private var serverDebugStr: String = ""
 
     Parameter( defaultValue = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=10112", property = "agentDebugStr", required = true)
