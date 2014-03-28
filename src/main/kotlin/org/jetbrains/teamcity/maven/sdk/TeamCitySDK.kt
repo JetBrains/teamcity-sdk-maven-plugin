@@ -73,6 +73,8 @@ public class RunTeamCityMojo() : AbstractTeamCityMojo() {
         // runAll start never returns EOF, so just ignore the output...
         // readOutput(procBuilder.start())
         procBuilder.start().waitFor()
+
+        getLog() info "TeamCity start command issued. Try opening browser at http://localhost:8111"
     }
 }
 
