@@ -8,10 +8,30 @@
     <packaging>maven-plugin</packaging>
 
     <name>TeamCity SDK Maven Plugin</name>
+    <description>Maven plugin to support development of plugins for TeamCity CI server</description>
     <url>http://github.com/nskvortsov/teamcity-sdk-maven-plugin</url>
     <prerequisites>
         <maven>3.0.4</maven>
     </prerequisites>
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/nskvortsov/teamcity-sdk-maven-plugin/issues</url>
+    </issueManagement>
+    <inceptionYear>2014</inceptionYear>
+    <scm>
+        <connection>scm:git:git@github.com:nskvortsov/teamcity-sdk-maven-plugin.git</connection>
+        <url>scm:git:git@github.com:nskvortsov/teamcity-sdk-maven-plugin.git</url>
+        <developerConnection>scm:git:git@github.com:nskvortsov/teamcity-sdk-maven-plugin.git</developerConnection>
+    </scm>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>3.2</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <properties>
         <kotlin.version>0.7.271</kotlin.version>
@@ -127,43 +147,4 @@
             </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>run-its</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-invoker-plugin</artifactId>
-                        <version>1.8</version>
-                        <configuration>
-                            <debug>true</debug>
-                            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-                            <pomIncludes>
-                                <pomInclude>*/pom.xml</pomInclude>
-                            </pomIncludes>
-                            <postBuildHookScript>verify</postBuildHookScript>
-                            <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-                            <settingsFile>src/it/settings.xml</settingsFile>
-                            <goals>
-                                <goal>clean</goal>
-                                <goal>test-compile</goal>
-                            </goals>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>integration-test</id>
-                                <goals>
-                                    <goal>install</goal>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-
-            </build>
-        </profile>
-    </profiles>
 </project>
