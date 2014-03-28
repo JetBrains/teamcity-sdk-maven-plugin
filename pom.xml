@@ -17,6 +17,13 @@
         <system>GitHub Issues</system>
         <url>https://github.com/nskvortsov/teamcity-sdk-maven-plugin/issues</url>
     </issueManagement>
+    <distributionManagement>
+      <repository>
+        <id>teamcity.repo</id>
+        <name>TeamCity Repository</name>
+        <url>http://repository.jetbrains.com/teamcity</url>
+      </repository>
+    </distributionManagement>
     <inceptionYear>2014</inceptionYear>
     <scm>
         <connection>scm:git:git@github.com:nskvortsov/teamcity-sdk-maven-plugin.git</connection>
