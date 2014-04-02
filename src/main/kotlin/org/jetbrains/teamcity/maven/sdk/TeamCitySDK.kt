@@ -11,6 +11,7 @@ import org.apache.maven.plugins.annotations.Parameter
 import java.io.File
 import com.google.common.io.Files
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.filefilter.FileFilterUtils
 
 
 Mojo(name = "init", aggregator = true)
@@ -72,7 +73,13 @@ public class RunTeamCityMojo() : AbstractTeamCityMojo() {
 
         // runAll start never returns EOF, so just ignore the output...
         // readOutput(procBuilder.start())
-        procBuilder.start().waitFor()
+        if (getLog().isDebugEnabled()) {
+            val process = procBuilder.start()
+            readOutput(process)
+            process.waitFor()
+        } else {
+            procBuilder.start().waitFor()
+        }
 
         getLog() info "TeamCity start command issued. Try opening browser at http://localhost:8111"
     }
@@ -87,5 +94,16 @@ public class StopTeamCityMojo() : AbstractTeamCityMojo() {
                 .redirectErrorStream(true)
                 .command(createCommand("stop"))
         readOutput(procBuilder.start())
+    }
+}
+
+Mojo(name = "reloadjsp", aggregator = true)
+public class ReloadJSPMojo() : AbstractTeamCityMojo () {
+    override fun doExecute() {
+        val artifactId = project?.getArtifactId()!!
+        val sourceJspDir = File("${artifactId}-server/src/main/resources/buildServerResources")
+        val targetJspDir = File(teamcityDir, "webapps/ROOT/plugins/${artifactId}")
+        getLog() info "Trying to copy jsp pages from $sourceJspDir to  $targetJspDir"
+        FileUtils.copyDirectory(sourceJspDir, targetJspDir, FileFilterUtils.trueFileFilter())
     }
 }
