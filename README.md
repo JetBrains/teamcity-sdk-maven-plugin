@@ -1,7 +1,11 @@
 TeamCity SDK Maven plugin
 =========================
 
-# General Info
+## Quickstart
+
+ (Almost) quickstart on developing a plugin is available [here](https://github.com/nskvortsov/teamcity-sdk-maven-plugin/wiki/Developing-TeamCity-plugin)
+
+## General Info
 
 This Maven plugin allow to control TeamCity instance from command line. It will install developed plugin if it is available. 
 
