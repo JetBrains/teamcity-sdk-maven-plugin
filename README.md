@@ -34,7 +34,7 @@ You will get:
 * Server with your plugin and debug port 10111
 * Agent with your plugin and debug port  10112
 
-# Plugin goals
+### Plugin goals
 
 The plugin adds three simple goadls:
 
@@ -45,7 +45,7 @@ The plugin adds three simple goadls:
 
 Please note, that TeamCity's startup process is not instant and stop command sent immediately after start may not be processed properly.
 
-# Plugin settings
+### Plugin settings
 
 The plugin is highly configurable. See the list of options below, along with default values. "User properties" are used to pass values from commandline (e.g., ```mvn teamcity-sdk:init -DteamcityVersion=8.1.1```)
 
