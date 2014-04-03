@@ -167,9 +167,8 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     }
 
     private fun TarArchiveEntry.isExecutable(): Boolean {
-        val i = getMode()
-        val ownPermissions = i / 100
-        val executableBit = ownPermissions.getBit(0)
+        val EXECUTABLE_BIT_INDEX = 6
+        val executableBit = getMode().getBit(EXECUTABLE_BIT_INDEX)
         return executableBit == 1
     }
 
