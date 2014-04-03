@@ -41,6 +41,7 @@ The plugin adds three simple goadls:
 * ```mvn teamcity-sdk:init``` will check if TeamCity distribution is available in target location and it's version is same as used in the maven project. If the distribution is missing, the plugin can download and unpack it for you.
 * ```mvn teamcity-sdk:start``` will do the init check (see above), deploy your plugin to the distribution, and start TeamCity server and agent
 * ```mvn teamcity-sdk:stop``` will do the init check (once again) and will issue stop command to both server and agent.
+* ```mvn teamcity-sdk:reloadResouces``` will do the init check and will copy over your static resources (from <plugin>-server/src/main/resouces/buildServerResources) to target teamcity server. May speedup ui development.
 
 Please note, that TeamCity's startup process is not instant and stop command sent immediately after start may not be processed properly.
 
