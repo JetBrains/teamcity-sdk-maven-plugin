@@ -21,6 +21,7 @@ import java.util.Properties
 import java.util.Scanner
 import java.util.jar.JarFile
 import java.io.FileInputStream
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 
 
 public abstract class AbstractTeamCityMojo() : AbstractMojo() {
@@ -130,7 +131,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
         val tarChannel = Channels.newChannel(tarInput)!!
         try {
             unpackingCounterThread.start()
-            tarInput.forEntry {
+            tarInput.eachEntry {
                 val name: String
                 val entryName = it.getName()
                 if (entryName.startsWith("TeamCity")) {
@@ -150,6 +151,9 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
                     val destOS = FileOutputStream(destPath)
                     try {
                         destOS.getChannel().transferFrom(tarChannel, 0, it.getSize())
+                        if (it.isExecutable()) {
+                            destPath.setExecutable(true)
+                        }
                     } finally {
                         destOS.close()
                     }
@@ -162,11 +166,18 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
         }
     }
 
-    protected fun ArchiveInputStream.forEntry(f : (ArchiveEntry) -> Unit) {
-        var entry = getNextEntry()
+    private fun TarArchiveEntry.isExecutable(): Boolean {
+        val i = getMode()
+        val ownPermissions = i / 100
+        val executableBit = ownPermissions.getBit(0)
+        return executableBit == 1
+    }
+
+    protected fun TarArchiveInputStream.eachEntry(f : (TarArchiveEntry) -> Unit) {
+        var entry = getNextEntry() as TarArchiveEntry?
         while (entry != null) {
-            f(entry as ArchiveEntry)
-            entry = getNextEntry()
+            f(entry as TarArchiveEntry)
+            entry = getNextEntry() as TarArchiveEntry?
         }
     }
 
@@ -200,7 +211,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
                 try {
                     val props = Properties()
                     props.loadFromXML(versionPropertiesStream!!)
-                    return props.get("Display_Version") as String
+                    return props["Display_Version"] as String
                 } finally {
                     versionPropertiesStream?.close()
                 }
@@ -235,3 +246,6 @@ public enum class TCDirectoryState {
     BAD
 }
 
+fun Int.getBit(index: Int): Int {
+    return this.ushr(index).and(1)
+}
