@@ -12,6 +12,7 @@ import java.io.File
 import com.google.common.io.Files
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.filefilter.FileFilterUtils
+import java.io.IOException
 
 
 Mojo(name = "init", aggregator = true)
@@ -70,9 +71,6 @@ public class RunTeamCityMojo() : AbstractTeamCityMojo() {
         procBuilder.environment()?.put("TEAMCITY_SERVER_OPTS", serverDebugStr)
         procBuilder.environment()?.put("TEAMCITY_AGENT_OPTS", agentDebugStr)
 
-
-        // runAll start never returns EOF, so just ignore the output...
-        // readOutput(procBuilder.start())
         if (getLog().isDebugEnabled()) {
             val process = procBuilder.start()
             readOutput(process)
@@ -97,12 +95,18 @@ public class StopTeamCityMojo() : AbstractTeamCityMojo() {
     }
 }
 
-Mojo(name = "reloadjsp", aggregator = true)
+Mojo(name = "reloadResouces", aggregator = true)
 public class ReloadJSPMojo() : AbstractTeamCityMojo () {
     override fun doExecute() {
         val artifactId = project?.getArtifactId()!!
         val sourceJspDir = File("${artifactId}-server/src/main/resources/buildServerResources")
         val targetJspDir = File(teamcityDir, "webapps/ROOT/plugins/${artifactId}")
+        getLog() info "Trying to cleanup existing resources in $targetJspDir"
+        try {
+            FileUtils.cleanDirectory(targetJspDir)
+        } catch (e: IOException) {
+            getLog() warn "Failed to clean existing resource. Some old files may have left. Error: ${e.getMessage()}"
+        }
         getLog() info "Trying to copy jsp pages from $sourceJspDir to  $targetJspDir"
         FileUtils.copyDirectory(sourceJspDir, targetJspDir, FileFilterUtils.trueFileFilter())
     }
