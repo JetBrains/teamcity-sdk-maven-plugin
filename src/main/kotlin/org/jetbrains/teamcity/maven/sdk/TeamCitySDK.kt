@@ -95,7 +95,7 @@ public class StopTeamCityMojo() : AbstractTeamCityMojo() {
     }
 }
 
-Mojo(name = "reloadResouces", aggregator = true)
+Mojo(name = "reloadResources", aggregator = true)
 public class ReloadJSPMojo() : AbstractTeamCityMojo () {
     override fun doExecute() {
         val artifactId = project?.getArtifactId()!!
