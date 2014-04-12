@@ -219,12 +219,12 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     }
 
     protected fun readOutput(process: Process): Int {
-        val s = Scanner(process.getInputStream()!!)
-        while (s.hasNextLine()) {
-            getLog() info s.nextLine()
-        }
-        s.close()
-        return process.waitFor()
+        val reader = ThreadedStringReader(process.getInputStream()!!) {
+            getLog() info it
+        }.start()
+        val returnValue = process.waitFor()
+        reader.stop()
+        return returnValue
     }
 
     protected fun createCommand(vararg params: String): List<String> {

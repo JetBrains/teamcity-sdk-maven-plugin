@@ -74,12 +74,7 @@ public class RunTeamCityMojo() : AbstractTeamCityMojo() {
         procBuilder.environment()?.put("TEAMCITY_SERVER_OPTS", serverDebugStr)
         procBuilder.environment()?.put("TEAMCITY_AGENT_OPTS", agentDebugStr)
 
-        val process = procBuilder.start()
-        val reader = ThreadedStringReader(process.getInputStream()!!) {
-            getLog() info it
-        }.start()
-        process.waitFor()
-        reader.stop()
+        readOutput(procBuilder.start())
 
         getLog() info "TeamCity start command issued. Try opening browser at http://localhost:8111"
     }
