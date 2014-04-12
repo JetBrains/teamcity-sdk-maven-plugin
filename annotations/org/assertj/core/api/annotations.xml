@@ -1,0 +1,8 @@
+<root>
+    <item name='org.assertj.core.api.Assertions org.assertj.core.api.IntegerAssert assertThat(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='org.assertj.core.api.Assertions org.assertj.core.api.ListAssert&lt;T&gt; assertThat(java.util.List&lt;T&gt;)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>

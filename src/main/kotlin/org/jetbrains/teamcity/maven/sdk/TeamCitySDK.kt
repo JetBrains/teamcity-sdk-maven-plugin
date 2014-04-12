@@ -13,6 +13,9 @@ import com.google.common.io.Files
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.filefilter.FileFilterUtils
 import java.io.IOException
+import java.util.Scanner
+import java.util.concurrent.atomic.AtomicBoolean
+import java.io.InputStream
 
 
 Mojo(name = "init", aggregator = true)
@@ -71,13 +74,12 @@ public class RunTeamCityMojo() : AbstractTeamCityMojo() {
         procBuilder.environment()?.put("TEAMCITY_SERVER_OPTS", serverDebugStr)
         procBuilder.environment()?.put("TEAMCITY_AGENT_OPTS", agentDebugStr)
 
-        if (getLog().isDebugEnabled()) {
-            val process = procBuilder.start()
-            readOutput(process)
-            process.waitFor()
-        } else {
-            procBuilder.start().waitFor()
-        }
+        val process = procBuilder.start()
+        val reader = ThreadedStringReader(process.getInputStream()!!) {
+            getLog() info it
+        }.start()
+        process.waitFor()
+        reader.stop()
 
         getLog() info "TeamCity start command issued. Try opening browser at http://localhost:8111"
     }
