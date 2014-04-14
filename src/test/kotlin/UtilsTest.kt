@@ -3,22 +3,19 @@
  * date: 03.04.2014.
  */
 
-
 import org.jetbrains.teamcity.maven.sdk.getBit
-import kotlin.test.assertEquals
 import org.junit.Test
-import java.io.StringBufferInputStream
-import java.io.StringReader
 import org.apache.commons.io.IOUtils
 import org.jetbrains.teamcity.maven.sdk.ThreadedStringReader
-import kotlin.test.assertFalse
 import org.assertj.core.api.Assertions.*
 import org.assertj.core.api.IntegerAssert
-import java.util.concurrent.atomic.AtomicInteger
 import com.google.common.io.CountingInputStream
 import org.assertj.core.api.ListAssert
+import java.io.File
+import org.jetbrains.teamcity.maven.sdk.test.TestWithTempFiles
+import org.jetbrains.teamcity.maven.sdk.TeamCityRetriever
 
-public class UtilsTest {
+public class UtilsTest(): TestWithTempFiles()  {
 
     Test public fun testGetBitExtension() {
         assertThat(1.getBit(0)).isOne()
@@ -44,6 +41,16 @@ public class UtilsTest {
         assertThatReadOf("").isEmpty()
         assertThatReadOf("\n").containsExactly("")
         assertThatReadOf("\n\n").containsExactly("","")
+    }
+
+    Test
+    public fun testUnpackTeamcityArchive() {
+        val tempDirectory : File = myTempFiles.newFolder(System.currentTimeMillis().toString())
+
+        val retriever = TeamCityRetriever("FakeUrl", "FakeVersion", {(m, l) -> println(m)})
+        retriever.doExtractTeamCity(File("src/test/resources/sample.tar.gz"), tempDirectory)
+
+        assertThat(File(tempDirectory, "file.txt")).exists().canRead()
     }
 
 

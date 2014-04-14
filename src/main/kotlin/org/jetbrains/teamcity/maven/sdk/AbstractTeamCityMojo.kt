@@ -5,23 +5,8 @@ import org.apache.maven.plugins.annotations.Parameter
 import java.io.File
 import org.apache.maven.project.MavenProject
 import org.apache.maven.plugin.MojoExecutionException
-import java.net.URL
-import org.apache.commons.io.input.CountingInputStream
-import java.nio.channels.ReadableByteChannel
-import java.nio.channels.Channels
-import java.io.FileOutputStream
-import java.util.concurrent.atomic.AtomicBoolean
-import org.apache.commons.io.FileUtils
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
-import java.util.zip.GZIPInputStream
-import java.io.BufferedInputStream
-import org.apache.commons.compress.archivers.ArchiveInputStream
-import org.apache.commons.compress.archivers.ArchiveEntry
 import java.util.Properties
-import java.util.Scanner
 import java.util.jar.JarFile
-import java.io.FileInputStream
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 
 
 public abstract class AbstractTeamCityMojo() : AbstractMojo() {
@@ -63,7 +48,16 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
     private fun downloadTeamCity(dir: File) {
         if (downloadQuietly || askToDownload(dir)) {
-            teamcityDir = doDownloadTeamCity(dir)
+            val retriever = TeamCityRetriever(teamcitySourceURL, teamcityVersion,
+                    { (message, debug) ->
+                        if (debug) {
+                            getLog() debug message
+                        } else {
+                            getLog() info message
+                        }
+                    })
+
+            retriever.downloadAndUnpackTeamCity(dir)
         } else {
             throw MojoExecutionException("TeamCity distribution not found.")
         }
@@ -83,111 +77,6 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
         print("Download TeamCity $teamcityVersion to  ${dir.getAbsolutePath()}?: Y:")
         val s = readLine()
         return s?.length == 0 || s?.toLowerCase()?.first() == 'y'
-    }
-
-    private fun doDownloadTeamCity(targetDir: File = File(project!!.getBasedir(), "servers/$teamcityVersion")): File {
-        val sourceURL = "$teamcitySourceURL/TeamCity-$teamcityVersion.tar.gz"
-
-        getLog() info "Downloading and unpacking TeamCity from $sourceURL to ${targetDir.getAbsolutePath()}"
-
-        val source = URL(sourceURL)
-        val sourceStream = source.openStream()
-        val downloadCounter = CountingInputStream(sourceStream)
-
-        val sourceChannel : ReadableByteChannel = Channels.newChannel(downloadCounter)!!
-
-        val tempFile = File.createTempFile("teamcityDistro", teamcityVersion)
-        val fos = FileOutputStream(tempFile);
-        try {
-
-            val counterFlag : AtomicBoolean = AtomicBoolean(true)
-            val counter = createCounter(counterFlag, downloadCounter)
-            try {
-                counter.start()
-                getLog() info "Transferring to temp file ${tempFile.getAbsolutePath()}"
-                fos.getChannel().transferFrom(sourceChannel, 0, java.lang.Long.MAX_VALUE);
-            } finally {
-                counterFlag.set(false)
-                counter.join(1000)
-                fos.close()
-                sourceChannel.close()
-            }
-
-            getLog() info "Unpacking"
-            extractTeamCity(tempFile, targetDir)
-        } finally {
-            tempFile.delete()
-        }
-        return targetDir
-    }
-
-    protected fun extractTeamCity(archive: File, destination: File) {
-        destination.mkdirs()
-        val counterFlag = AtomicBoolean(true)
-        val unpackingCounter = CountingInputStream(FileInputStream(archive))
-        val unpackingCounterThread = createCounter(counterFlag, unpackingCounter)
-
-        val tarInput = TarArchiveInputStream(GZIPInputStream(BufferedInputStream(unpackingCounter)))
-        val tarChannel = Channels.newChannel(tarInput)!!
-        try {
-            unpackingCounterThread.start()
-            tarInput.eachEntry {
-                val name: String
-                val entryName = it.getName()
-                if (entryName.startsWith("TeamCity")) {
-                    name = entryName.substring("TeamCity".length)
-                } else {
-                    name = entryName
-                }
-                val destPath = File(destination, name)
-                if (it.isDirectory()) {
-                    getLog() debug "Creating dir ${destPath.getAbsolutePath()}"
-                    destPath.mkdirs()
-                } else {
-                    getLog() debug "Creating dir ${destPath.getParentFile()?.getAbsolutePath()}"
-                    destPath.getParentFile()?.mkdirs()
-                    getLog() debug "Creating file ${destPath.getAbsolutePath()}"
-                    destPath.createNewFile()
-                    val destOS = FileOutputStream(destPath)
-                    try {
-                        destOS.getChannel().transferFrom(tarChannel, 0, it.getSize())
-                        if (it.isExecutable()) {
-                            destPath.setExecutable(true)
-                        }
-                    } finally {
-                        destOS.close()
-                    }
-                }
-            }
-        } finally {
-            counterFlag.set(false)
-            unpackingCounterThread.join(1000)
-            tarChannel.close()
-        }
-    }
-
-    private fun TarArchiveEntry.isExecutable(): Boolean {
-        val EXECUTABLE_BIT_INDEX = 6
-        val executableBit = getMode().getBit(EXECUTABLE_BIT_INDEX)
-        return executableBit == 1
-    }
-
-    protected fun TarArchiveInputStream.eachEntry(f : (TarArchiveEntry) -> Unit) {
-        var entry = getNextEntry() as TarArchiveEntry?
-        while (entry != null) {
-            f(entry as TarArchiveEntry)
-            entry = getNextEntry() as TarArchiveEntry?
-        }
-    }
-
-    private fun createCounter(flag: AtomicBoolean, counter: CountingInputStream): Thread {
-        return Thread({
-            while(flag.get()) {
-                Thread.sleep(1000)
-                print("\r" + FileUtils.byteCountToDisplaySize(counter.getByteCount()))
-            }
-            println()
-        })
     }
 
     protected fun looksLikeTeamCityDir(dir: File): Boolean = File(dir, "bin/runAll.sh").exists()
@@ -227,7 +116,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
         return returnValue
     }
 
-    protected fun createCommand(vararg params: String): List<String> {
+    protected fun createRunCommand(vararg params: String): List<String> {
         return if (isWindows())
             listOf("cmd", "/C", "bin\\runAll") + params
         else
@@ -245,6 +134,3 @@ public enum class TCDirectoryState {
     BAD
 }
 
-fun Int.getBit(index: Int): Int {
-    return this.ushr(index).and(1)
-}

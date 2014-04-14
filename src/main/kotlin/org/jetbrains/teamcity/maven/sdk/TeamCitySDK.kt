@@ -68,7 +68,7 @@ public class RunTeamCityMojo() : AbstractTeamCityMojo() {
         val procBuilder = ProcessBuilder()
                 .directory(teamcityDir)
                 .redirectErrorStream(true)
-                .command(createCommand("start"))
+                .command(createRunCommand("start"))
 
         procBuilder.environment()?.put("TEAMCITY_DATA_PATH", effectiveDataDir)
         procBuilder.environment()?.put("TEAMCITY_SERVER_OPTS", serverDebugStr)
@@ -87,7 +87,7 @@ public class StopTeamCityMojo() : AbstractTeamCityMojo() {
         val procBuilder = ProcessBuilder()
                 .directory(teamcityDir)
                 .redirectErrorStream(true)
-                .command(createCommand("stop"))
+                .command(createRunCommand("stop"))
         readOutput(procBuilder.start())
     }
 }

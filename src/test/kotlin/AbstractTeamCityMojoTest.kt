@@ -8,11 +8,10 @@ import org.junit.Test
 import java.io.File
 import org.jetbrains.teamcity.maven.sdk.TCDirectoryState
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import org.jetbrains.teamcity.maven.sdk.test.TestWithTempFiles
 
 
-public class TCMojoTest() : TestWithTempFiles() {
+public class TCMojoTest(): TestWithTempFiles() {
 
     val default_8_0_2_path = "src/test/resources/defaultServerLocation/servers/8.0.2"
 
@@ -33,15 +32,6 @@ public class TCMojoTest() : TestWithTempFiles() {
     }
 
     Test
-    public fun unpackTeamcityArchive() {
-        val mockTCMojo = MockTCMojo()
-        val tempDirectory : File = myTempFiles.newFolder(System.currentTimeMillis().toString())
-
-        mockTCMojo.unpack(File("src/test/resources/sample.tar.gz"), tempDirectory)
-        assertTrue(File(tempDirectory, "file.txt").exists())
-    }
-
-    Test
     public fun silentDownloadTeamCity() {
         val tcDir = myTempFiles.newFolder("TC_DIR")
         val mockTCMojo = MockTCMojo().setSilentDownload(true)
@@ -49,7 +39,6 @@ public class TCMojoTest() : TestWithTempFiles() {
                                      .setTeamCityDir(tcDir)
 
         mockTCMojo.execute()
-
         assertEquals(TCDirectoryState.GOOD, MockTCMojo().checkDir(tcDir))
     }
 }
@@ -65,10 +54,6 @@ class MockTCMojo(ver: String = "8.0.2") : AbstractTeamCityMojo() {
 
     public fun checkDir(dir: File = teamcityDir!!): TCDirectoryState {
         return evalTeamCityDirectory(dir)
-    }
-
-    public fun unpack(archive: File, destination: File) {
-        extractTeamCity(archive, destination)
     }
 
     public fun setSilentDownload(flag: Boolean): MockTCMojo {

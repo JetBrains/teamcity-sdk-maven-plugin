@@ -1,4 +1,10 @@
 <root>
+    <item name='org.assertj.core.api.AbstractFileAssert S exists()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='org.assertj.core.api.Assertions org.assertj.core.api.FileAssert assertThat(java.io.File)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
     <item name='org.assertj.core.api.Assertions org.assertj.core.api.IntegerAssert assertThat(int)'>
         <annotation name='org.jetbrains.annotations.NotNull'/>
     </item>
