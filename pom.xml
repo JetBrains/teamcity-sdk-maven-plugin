@@ -3,7 +3,7 @@
 
     <groupId>org.jetbrains.teamcity</groupId>
     <artifactId>teamcity-sdk-maven-plugin</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>TeamCity SDK Maven Plugin</name>
@@ -28,7 +28,7 @@
         <connection>scm:git:git@github.com:nskvortsov/teamcity-sdk-maven-plugin.git</connection>
         <url>scm:git:git@github.com:nskvortsov/teamcity-sdk-maven-plugin.git</url>
         <developerConnection>scm:git:git@github.com:nskvortsov/teamcity-sdk-maven-plugin.git</developerConnection>
-      <tag>teamcity-sdk-maven-plugin-0.1</tag>
+      <tag>HEAD</tag>
   </scm>
     <reporting>
         <plugins>
