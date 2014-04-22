@@ -18,7 +18,7 @@ If you have such a project, add:
       <plugin>
         <groupId>org.jetbrains.teamcity</groupId>
         <artifactId>teamcity-sdk-maven-plugin</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1</version>
         <configuration>
             <teamcityDir>/path/to/tc/distro</teamcityDir> <!-- optional -->
         </configuration>
