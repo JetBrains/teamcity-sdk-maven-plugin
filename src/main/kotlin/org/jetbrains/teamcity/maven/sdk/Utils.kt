@@ -22,8 +22,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry
  */
 
 
-
-
 class ThreadedStringReader(val stream: InputStream, handler: (String) -> Unit) {
 
     private val BUFFER_SIZE = 4096
