@@ -22,7 +22,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     Parameter( defaultValue = "false", property = "downloadQuietly", required = true)
     protected var downloadQuietly: Boolean = false
 
-    Parameter( defaultValue = "http://download.jetbrains.com/teamcity", property = "downloadQuietly", required = true)
+    Parameter( defaultValue = "http://download.jetbrains.com/teamcity", property = "teamcitySourceURL", required = true)
     protected var teamcitySourceURL: String = ""
     /**
      * The maven project.
