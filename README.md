@@ -76,5 +76,5 @@ The plugin is highly configurable. See the list of options below, along with def
 
 - ```teamcitySourceURL``` base part of URL that will be used to download TeamCity distribution. Plugin will append "/TeamCity-<version>.tar.gz" to it (e.g. http://download.jetbrains.com/teamcity/TeamCity-8.1.tar.gz)
  - Default value is: http://download.jetbrains.com/teamcity
- - User property is: downloadQuietly
+ - User property is: teamcitySourceURL
 
