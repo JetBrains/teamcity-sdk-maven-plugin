@@ -41,7 +41,7 @@
     </reporting>
 
     <properties>
-        <kotlin.version>0.7.271</kotlin.version>
+        <kotlin.version>0.8.679</kotlin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
