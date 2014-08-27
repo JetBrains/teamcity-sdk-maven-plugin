@@ -7,6 +7,7 @@ import org.apache.maven.project.MavenProject
 import org.apache.maven.plugin.MojoExecutionException
 import java.util.Properties
 import java.util.jar.JarFile
+import org.apache.commons.io.FileUtils
 
 
 public abstract class AbstractTeamCityMojo() : AbstractMojo() {
@@ -24,6 +25,17 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
     Parameter( defaultValue = "http://download.jetbrains.com/teamcity", property = "teamcitySourceURL", required = true)
     protected var teamcitySourceURL: String = ""
+
+    Parameter( defaultValue = "\${project.artifactId}.zip")
+    protected var pluginPackageName : String = ""
+
+    /**
+     * Location of the TeamCity data directory.
+     */
+    Parameter( defaultValue = ".datadir", property = "dataDirectory", required = true )
+    protected var dataDirectory: String = ""
+
+
     /**
      * The maven project.
      */
@@ -125,6 +137,27 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
     protected fun isWindows(): Boolean {
         return System.getProperty("os.name")!!.contains("Windows")
+    }
+
+    protected fun uploadPluginAgentZip(): String {
+        val proj = project!!
+
+        val packageFile = File(proj.getBuild()!!.getDirectory()!!, pluginPackageName)
+
+        val effectiveDataDir =
+                (if (File(dataDirectory).isAbsolute()) {
+                    File(dataDirectory)
+                } else {
+                    File(teamcityDir, dataDirectory)
+                }).getAbsolutePath()
+
+        if (packageFile.exists()) {
+            val dataDirFile = File(effectiveDataDir)
+            FileUtils.copyFile(packageFile, File(dataDirFile, "plugins/" + pluginPackageName))
+        } else {
+            getLog() warn "Target file [${packageFile.getAbsolutePath()}] does not exist. Nothing will be deployed. Did you forget 'package' goal?"
+        }
+        return effectiveDataDir
     }
 }
 

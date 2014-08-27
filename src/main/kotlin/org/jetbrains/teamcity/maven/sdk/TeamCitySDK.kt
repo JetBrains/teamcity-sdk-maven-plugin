@@ -27,11 +27,6 @@ public class InitTeamCityMojo() : AbstractTeamCityMojo() {
 
 Mojo(name = "start", aggregator = true)
 public class RunTeamCityMojo() : AbstractTeamCityMojo() {
-    /**
-     * Location of the TeamCity data directory.
-     */
-    Parameter( defaultValue = ".datadir", property = "dataDirectory", required = true )
-    private var dataDirectory: String = ""
 
     Parameter( defaultValue = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=10111 -Dteamcity.development.mode=true", property = "serverDebugStr", required = true)
     private var serverDebugStr: String = ""
@@ -39,28 +34,9 @@ public class RunTeamCityMojo() : AbstractTeamCityMojo() {
     Parameter( defaultValue = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=10112", property = "agentDebugStr", required = true)
     private var agentDebugStr: String = ""
 
-    Parameter( defaultValue = "\${project.artifactId}.zip")
-    private var pluginPackageName : String = ""
-
 
     override fun doExecute() {
-        val proj = project!!
-
-        val packageFile = File(proj.getBuild()!!.getDirectory()!!, pluginPackageName)
-
-        val effectiveDataDir =
-                (if (File(dataDirectory).isAbsolute()) {
-                    File(dataDirectory)
-                } else {
-                    File(teamcityDir, dataDirectory)
-                }).getAbsolutePath()
-
-        if (packageFile.exists()) {
-            val dataDirFile = File(effectiveDataDir)
-            FileUtils.copyFile(packageFile, File(dataDirFile, "plugins/" + pluginPackageName))
-        } else {
-            getLog() warn "Target file [${packageFile.getAbsolutePath()}] does not exist. Nothing will be deployed. Did you forget 'package' goal?"
-        }
+        val effectiveDataDir = uploadPluginAgentZip()
 
         getLog() info "Starting TC in [${teamcityDir?.getAbsolutePath()}]"
         getLog() info "TC data directory is [${effectiveDataDir}]"
@@ -93,7 +69,7 @@ public class StopTeamCityMojo() : AbstractTeamCityMojo() {
 }
 
 Mojo(name = "reloadResources", aggregator = true)
-public class ReloadJSPMojo() : AbstractTeamCityMojo () {
+public class ReloadJSPMojo() : AbstractTeamCityMojo() {
     override fun doExecute() {
         val artifactId = project?.getArtifactId()!!
         val sourceJspDir = File("${artifactId}-server/src/main/resources/buildServerResources")
@@ -106,5 +82,13 @@ public class ReloadJSPMojo() : AbstractTeamCityMojo () {
         }
         getLog() info "Trying to copy jsp pages from $sourceJspDir to  $targetJspDir"
         FileUtils.copyDirectory(sourceJspDir, targetJspDir, FileFilterUtils.trueFileFilter())
+    }
+}
+
+Mojo(name = "reload", aggregator = true)
+public class ReloadPluginMojo() : AbstractTeamCityMojo() {
+    override fun doExecute() {
+        uploadPluginAgentZip()
+        getLog() info "Plugin uploaded. Wait for TeamCity agent to upgrade."
     }
 }
