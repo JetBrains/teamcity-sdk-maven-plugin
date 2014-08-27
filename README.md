@@ -19,7 +19,7 @@ If you have such a project, add:
       <plugin>
         <groupId>org.jetbrains.teamcity</groupId>
         <artifactId>teamcity-sdk-maven-plugin</artifactId>
-        <version>0.1</version>
+        <version>0.2</version>
         <configuration>
             <teamcityDir>/path/to/tc/distro</teamcityDir> <!-- optional -->
         </configuration>
@@ -29,7 +29,7 @@ If you have such a project, add:
 ```
 to root pom.xml file and run
 
-```mvn package teamcity-sdk:start```
+```mvn package tc-sdk:start```
 
 You will get:
 * Server with your plugin and debug port 10111
@@ -39,16 +39,17 @@ You will get:
 
 The plugin adds three simple goadls:
 
-* ```mvn teamcity-sdk:init``` will check if TeamCity distribution is available in target location and it's version is same as used in the maven project. If the distribution is missing, the plugin can download and unpack it for you.
-* ```mvn teamcity-sdk:start``` will do the init check (see above), deploy your plugin to the distribution, and start TeamCity server and agent
-* ```mvn teamcity-sdk:stop``` will do the init check (once again) and will issue stop command to both server and agent.
-* ```mvn teamcity-sdk:reloadResouces``` will do the init check and will copy over your static resources (from <plugin>-server/src/main/resouces/buildServerResources) to target teamcity server. May speedup ui development.
+* ```mvn tc-sdk:init``` will check if TeamCity distribution is available in target location and it's version is same as used in the maven project. If the distribution is missing, the plugin can download and unpack it for you.
+* ```mvn tc-sdk:start``` will do the init check (see above), deploy your plugin to the distribution, and start TeamCity server and agent
+* ```mvn tc-sdk:stop``` will do the init check (once again) and will issue stop command to both server and agent.
+* ```mvn tc-sdk:reload`` will do the ini t check and will copy your plugin to the distribution. Can be useful to quickly deploy agent-side changes without need to restart the whole server, as TeamCity will automatically update the agent with new plugin version.
+* ```mvn tc-sdk:reloadResouces``` will do the init check and will copy over your static resources (from <plugin>-server/src/main/resouces/buildServerResources) to target teamcity server. May speedup ui development.
 
 Please note, that TeamCity's startup process is not instant and stop command sent immediately after start may not be processed properly.
 
 ### Plugin settings
 
-The plugin is highly configurable. See the list of options below, along with default values. "User properties" are used to pass values from commandline (e.g., ```mvn teamcity-sdk:init -DteamcityVersion=8.1.1```)
+The plugin is highly configurable. See the list of options below, along with default values. "User properties" are used to pass values from commandline (e.g., ```mvn tc-sdk:init -DteamcityVersion=8.1.1```)
 
 - ```teamcityDir```	path to TeamCity installation. Relative path will be resolved against ```${project.baseDir}```
  - Default value is: servers/${teamcity-version}
