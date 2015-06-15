@@ -12,7 +12,17 @@ This Maven plugin allow to control TeamCity instance from command line. It will 
 
 The plugin works best when used with projects generated from [maven archetype](http://confluence.jetbrains.com/display/TCD8/Developing+Plugins+Using+Maven#DevelopingPluginsUsingMaven-MavenArchetypes) for TeamCity plugins.
 
-If you have such a project, add:
+If you have such a project, make sure you have proper plugin repository configured:
+```xml
+<pluginRepositories>
+  <pluginRepository>
+    <id>JetBrains</id>
+    <url>http://repository.jetbrains.com/all</url>
+  </pluginRepository>
+</pluginRepositories>
+```
+and add the plugin itself:
+
 ```xml
  <build>
     <plugins>
