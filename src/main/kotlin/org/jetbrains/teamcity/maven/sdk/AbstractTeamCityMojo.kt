@@ -63,7 +63,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     private fun downloadTeamCity(dir: File) {
         if (downloadQuietly || askToDownload(dir)) {
             val retriever = TeamCityRetriever(teamcitySourceURL, teamcityVersion,
-                    { (message, debug) ->
+                    { message, debug ->
                         if (debug) {
                             getLog() debug message
                         } else {
@@ -90,7 +90,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     private fun askToDownload(dir: File): Boolean {
         print("Download TeamCity $teamcityVersion to  ${dir.getAbsolutePath()}?: Y:")
         val s = readLine()
-        return s?.length == 0 || s?.toLowerCase()?.first() == 'y'
+        return s?.length() == 0 || s?.toLowerCase()?.first() == 'y'
     }
 
     protected fun looksLikeTeamCityDir(dir: File): Boolean = File(dir, "bin/runAll.sh").exists()
@@ -172,8 +172,8 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 }
 
 public enum class TCDirectoryState {
-    GOOD
-    MISVERSION
+    GOOD,
+    MISVERSION,
     BAD
 }
 
