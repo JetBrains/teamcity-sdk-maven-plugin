@@ -48,7 +48,7 @@ class ThreadedStringReader(val stream: InputStream, handler: (String) -> Unit) {
             }
         }
 
-        if (stringBuffer.size > 0) {
+        if (stringBuffer.length() > 0) {
             handler(stringBuffer.toString())
         }
 
@@ -79,7 +79,7 @@ class TeamCityRetriever(val teamcitySourceURL: String,
         try {
             tcDistributionTempFile = doDownloadTeamCity()
             logInfo("Unpacking")
-            doExtractTeamCity(tcDistributionTempFile!!, targetDir)
+            doExtractTeamCity(tcDistributionTempFile, targetDir)
         } finally {
             FileUtils.deleteQuietly(tcDistributionTempFile)
         }
@@ -130,7 +130,7 @@ class TeamCityRetriever(val teamcitySourceURL: String,
                 val name: String
                 val entryName = it.getName()
                 if (entryName.startsWith("TeamCity")) {
-                    name = entryName.substring("TeamCity".length)
+                    name = entryName.substring("TeamCity".length())
                 } else {
                     name = entryName
                 }
@@ -171,7 +171,7 @@ class TeamCityRetriever(val teamcitySourceURL: String,
     protected fun TarArchiveInputStream.eachEntry(f : (TarArchiveEntry) -> Unit) {
         var entry = getNextEntry() as TarArchiveEntry?
         while (entry != null) {
-            f(entry as TarArchiveEntry)
+            f(entry)
             entry = getNextEntry() as TarArchiveEntry?
         }
     }

@@ -89,3 +89,7 @@ The plugin is highly configurable. See the list of options below, along with def
  - Default value is: http://download.jetbrains.com/teamcity
  - User property is: teamcitySourceURL
 
+- ```startAgent``` option not to start agent
+ - Default value is: true
+ - User property is: startAgent
+

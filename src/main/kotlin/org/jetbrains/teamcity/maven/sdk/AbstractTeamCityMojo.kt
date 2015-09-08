@@ -29,12 +29,14 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     Parameter( defaultValue = "\${project.artifactId}.zip")
     protected var pluginPackageName : String = ""
 
+    Parameter ( defaultValue = "true", property = "startAgent")
+    protected var startAgent: Boolean = true
+
     /**
      * Location of the TeamCity data directory.
      */
     Parameter( defaultValue = ".datadir", property = "dataDirectory", required = true )
     protected var dataDirectory: String = ""
-
 
     /**
      * The maven project.
@@ -61,7 +63,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     private fun downloadTeamCity(dir: File) {
         if (downloadQuietly || askToDownload(dir)) {
             val retriever = TeamCityRetriever(teamcitySourceURL, teamcityVersion,
-                    { (message, debug) ->
+                    { message, debug ->
                         if (debug) {
                             getLog() debug message
                         } else {
@@ -88,7 +90,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     private fun askToDownload(dir: File): Boolean {
         print("Download TeamCity $teamcityVersion to  ${dir.getAbsolutePath()}?: Y:")
         val s = readLine()
-        return s?.length == 0 || s?.toLowerCase()?.first() == 'y'
+        return s?.length() == 0 || s?.toLowerCase()?.first() == 'y'
     }
 
     protected fun looksLikeTeamCityDir(dir: File): Boolean = File(dir, "bin/runAll.sh").exists()
@@ -129,10 +131,18 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     }
 
     protected fun createRunCommand(vararg params: String): List<String> {
+        val fileName = getStartScriptName()
         return if (isWindows())
-            listOf("cmd", "/C", "bin\\runAll") + params
+            listOf("cmd", "/C", "bin\\${fileName}") + params
         else
-            listOf("/bin/bash", "bin/runAll.sh") + params
+            listOf("/bin/bash", "bin/${fileName}.sh") + params
+    }
+
+    private fun getStartScriptName(): String {
+        return if (startAgent)
+            "runAll"
+        else
+            "teamcity-server"
     }
 
     protected fun isWindows(): Boolean {
@@ -162,8 +172,8 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 }
 
 public enum class TCDirectoryState {
-    GOOD
-    MISVERSION
+    GOOD,
+    MISVERSION,
     BAD
 }
 

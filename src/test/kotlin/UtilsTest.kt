@@ -47,7 +47,7 @@ public class UtilsTest(): TestWithTempFiles()  {
     public fun testUnpackTeamcityArchive() {
         val tempDirectory : File = myTempFiles.newFolder(System.currentTimeMillis().toString())
 
-        val retriever = TeamCityRetriever("FakeUrl", "FakeVersion", {(m, l) -> println(m)})
+        val retriever = TeamCityRetriever("FakeUrl", "FakeVersion", { m, l -> println(m)})
         retriever.doExtractTeamCity(File("src/test/resources/sample.tar.gz"), tempDirectory)
 
         assertThat(File(tempDirectory, "file.txt")).exists().canRead()
@@ -63,7 +63,7 @@ public class UtilsTest(): TestWithTempFiles()  {
 
         reader.start()
         waitFor {
-            stream.getCount() == text.size.toLong()
+            stream.getCount() == text.length().toLong()
         }
 
         reader.stop()

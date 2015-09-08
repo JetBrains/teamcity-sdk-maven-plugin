@@ -9,12 +9,13 @@ import java.io.File
 import org.jetbrains.teamcity.maven.sdk.TCDirectoryState
 import kotlin.test.assertEquals
 import org.jetbrains.teamcity.maven.sdk.test.TestWithTempFiles
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 
 public class TCMojoTest(): TestWithTempFiles() {
 
     val default_8_0_2_path = "src/test/resources/defaultServerLocation/servers/8.0.2"
-
 
     Test
     public fun checkTeamCityByDefaultPath() {
@@ -35,21 +36,39 @@ public class TCMojoTest(): TestWithTempFiles() {
     public fun silentDownloadTeamCity() {
         val tcDir = myTempFiles.newFolder("TC_DIR")
         val mockTCMojo = MockTCMojo().setSilentDownload(true)
-                                     .setDownloadSource(File("src/test/resources").getAbsoluteFile().toURI().toURL().toString())
-                                     .setTeamCityDir(tcDir)
+                .setDownloadSource(File("src/test/resources").getAbsoluteFile().toURI().toURL().toString())
+                .setTeamCityDir(tcDir)
 
         mockTCMojo.execute()
         assertEquals(TCDirectoryState.GOOD, MockTCMojo().checkDir(tcDir))
     }
+
+    Test
+    public fun runServerOnly() {
+        val tcDir = myTempFiles.newFolder("TC_DIR")
+        val mockTCMojo = MockTCMojo().setSilentDownload(true)
+                .setDownloadSource(File("src/test/resources").getAbsoluteFile().toURI().toURL().toString())
+                .setTeamCityDir(tcDir)
+                .setStartAgent(false)
+        mockTCMojo.execute()
+        assertEquals(TCDirectoryState.GOOD, MockTCMojo().checkDir(tcDir))
+        val log = mockTCMojo.dumpLog()
+        assertTrue(log.contains("teamcity-server"))
+        assertFalse(log.contains("runAll"))
+    }
 }
 
 
-class MockTCMojo(ver: String = "8.0.2") : AbstractTeamCityMojo() {
-    {
+class MockTCMojo: AbstractTeamCityMojo {
+
+    private val logStub = StringBuilder()
+
+    constructor(ver: String = "8.0.2") {
         teamcityVersion = ver
     }
+
     override fun doExecute() {
-        // do nothing
+        logStub.append(createRunCommand()).append("\n");
     }
 
     public fun checkDir(dir: File = teamcityDir!!): TCDirectoryState {
@@ -70,4 +89,11 @@ class MockTCMojo(ver: String = "8.0.2") : AbstractTeamCityMojo() {
         teamcityDir = file
         return this
     }
+
+    public fun setStartAgent(flag: Boolean): MockTCMojo {
+        startAgent = flag
+        return this
+    }
+
+    public fun dumpLog() : String = logStub.toString()
 }
