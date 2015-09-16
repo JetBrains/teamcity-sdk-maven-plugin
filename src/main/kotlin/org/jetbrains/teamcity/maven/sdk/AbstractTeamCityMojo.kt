@@ -1,47 +1,47 @@
 package org.jetbrains.teamcity.maven.sdk
 
-import org.apache.maven.plugin.AbstractMojo
-import org.apache.maven.plugins.annotations.Parameter
-import java.io.File
-import org.apache.maven.project.MavenProject
-import org.apache.maven.plugin.MojoExecutionException
-import java.util.Properties
-import java.util.jar.JarFile
 import org.apache.commons.io.FileUtils
+import org.apache.maven.plugin.AbstractMojo
+import org.apache.maven.plugin.MojoExecutionException
+import org.apache.maven.plugins.annotations.Parameter
+import org.apache.maven.project.MavenProject
+import java.io.File
+import java.util.*
+import java.util.jar.JarFile
 
 
 public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     /**
      * Location of the TeamCity distribution.
      */
-    Parameter( defaultValue = "servers/\${teamcity-version}", property = "teamcityDir", required = true )
+    @Parameter( defaultValue = "servers/\${teamcity-version}", property = "teamcityDir", required = true )
     protected var teamcityDir: File? = null
 
-    Parameter( defaultValue = "\${teamcity-version}", property = "teamcityVersion", required = true)
+    @Parameter( defaultValue = "\${teamcity-version}", property = "teamcityVersion", required = true)
     protected var teamcityVersion: String = ""
 
-    Parameter( defaultValue = "false", property = "downloadQuietly", required = true)
+    @Parameter( defaultValue = "false", property = "downloadQuietly", required = true)
     protected var downloadQuietly: Boolean = false
 
-    Parameter( defaultValue = "http://download.jetbrains.com/teamcity", property = "teamcitySourceURL", required = true)
+    @Parameter( defaultValue = "http://download.jetbrains.com/teamcity", property = "teamcitySourceURL", required = true)
     protected var teamcitySourceURL: String = ""
 
-    Parameter( defaultValue = "\${project.artifactId}.zip")
+    @Parameter( defaultValue = "\${project.artifactId}.zip")
     protected var pluginPackageName : String = ""
 
-    Parameter ( defaultValue = "true", property = "startAgent")
+    @Parameter ( defaultValue = "true", property = "startAgent")
     protected var startAgent: Boolean = true
 
     /**
      * Location of the TeamCity data directory.
      */
-    Parameter( defaultValue = ".datadir", property = "dataDirectory", required = true )
+    @Parameter( defaultValue = ".datadir", property = "dataDirectory", required = true )
     protected var dataDirectory: String = ""
 
     /**
      * The maven project.
      */
-    Parameter( defaultValue = "\${project}", readonly = true)
+    @Parameter( defaultValue = "\${project}", readonly = true)
     protected var project : MavenProject? = null
 
     override fun execute() {
@@ -53,9 +53,9 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
     protected fun checkTeamCityDirectory(dir: File) {
         when (evalTeamCityDirectory(dir)) {
-            TCDirectoryState.GOOD -> getLog() info "TeamCity $teamcityVersion is located at $teamcityDir"
-            TCDirectoryState.MISVERSION -> getLog() warn "TeamCity verison at [${dir.getAbsolutePath()}] is [${getTCVersion(dir)}], but project uses [$teamcityVersion]"
-            TCDirectoryState.BAD -> { getLog() info "TeamCity distribution not found at [${dir.getAbsolutePath()}]"
+            TCDirectoryState.GOOD -> log info "TeamCity $teamcityVersion is located at $teamcityDir"
+            TCDirectoryState.MISVERSION -> log warn "TeamCity verison at [${dir.absolutePath}] is [${getTCVersion(dir)}], but project uses [$teamcityVersion]"
+            TCDirectoryState.BAD -> { log info "TeamCity distribution not found at [${dir.absolutePath}]"
                                       downloadTeamCity(dir) }
         }
     }
@@ -65,9 +65,9 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
             val retriever = TeamCityRetriever(teamcitySourceURL, teamcityVersion,
                     { message, debug ->
                         if (debug) {
-                            getLog() debug message
+                            log debug message
                         } else {
-                            getLog() info message
+                            log info message
                         }
                     })
 
@@ -88,7 +88,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     }
 
     private fun askToDownload(dir: File): Boolean {
-        print("Download TeamCity $teamcityVersion to  ${dir.getAbsolutePath()}?: Y:")
+        print("Download TeamCity $teamcityVersion to  ${dir.absolutePath}?: Y:")
         val s = readLine()
         return s?.length() == 0 || s?.toLowerCase()?.first() == 'y'
     }
@@ -100,14 +100,14 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     protected fun getTCVersion(teamcityDir: File): String {
         var commonAPIjar = File(teamcityDir, "webapps/ROOT/WEB-INF/lib/common-api.jar")
 
-        if (!commonAPIjar.exists() || !commonAPIjar.isFile()) {
-            throw MojoExecutionException("Can not read TeamCity version. Can not access [${commonAPIjar.getAbsolutePath()}]."
+        if (!commonAPIjar.exists() || !commonAPIjar.isFile) {
+            throw MojoExecutionException("Can not read TeamCity version. Can not access [${commonAPIjar.absolutePath}]."
             + "Check that [$teamcityDir] points to valid TeamCity installation")
         } else {
             var jarFile = JarFile(commonAPIjar)
             val zipEntry = jarFile.getEntry("serverVersion.properties.xml")
             if (zipEntry == null) {
-                throw MojoExecutionException("Failed to read TeamCity's version from [${commonAPIjar.getAbsolutePath()}]. Please, verify your intallation.")
+                throw MojoExecutionException("Failed to read TeamCity's version from [${commonAPIjar.absolutePath}]. Please, verify your intallation.")
             } else {
                 val versionPropertiesStream = jarFile.getInputStream(zipEntry)
                 try {
@@ -122,8 +122,8 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     }
 
     protected fun readOutput(process: Process): Int {
-        val reader = ThreadedStringReader(process.getInputStream()!!) {
-            getLog() info it
+        val reader = ThreadedStringReader(process.inputStream!!) {
+            log info it
         }.start()
         val returnValue = process.waitFor()
         reader.stop()
@@ -133,9 +133,9 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     protected fun createRunCommand(vararg params: String): List<String> {
         val fileName = getStartScriptName()
         return if (isWindows())
-            listOf("cmd", "/C", "bin\\${fileName}") + params
+            listOf("cmd", "/C", "bin\\$fileName") + params
         else
-            listOf("/bin/bash", "bin/${fileName}.sh") + params
+            listOf("/bin/bash", "bin/$fileName.sh") + params
     }
 
     private fun getStartScriptName(): String {
@@ -152,20 +152,20 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     protected fun uploadPluginAgentZip(): String {
         val proj = project!!
 
-        val packageFile = File(proj.getBuild()!!.getDirectory()!!, pluginPackageName)
+        val packageFile = File(proj.build!!.directory!!, pluginPackageName)
 
         val effectiveDataDir =
-                (if (File(dataDirectory).isAbsolute()) {
+                (if (File(dataDirectory).isAbsolute) {
                     File(dataDirectory)
                 } else {
                     File(teamcityDir, dataDirectory)
-                }).getAbsolutePath()
+                }).absolutePath
 
         if (packageFile.exists()) {
             val dataDirFile = File(effectiveDataDir)
             FileUtils.copyFile(packageFile, File(dataDirFile, "plugins/" + pluginPackageName))
         } else {
-            getLog() warn "Target file [${packageFile.getAbsolutePath()}] does not exist. Nothing will be deployed. Did you forget 'package' goal?"
+            log warn "Target file [${packageFile.absolutePath}] does not exist. Nothing will be deployed. Did you forget 'package' goal?"
         }
         return effectiveDataDir
     }

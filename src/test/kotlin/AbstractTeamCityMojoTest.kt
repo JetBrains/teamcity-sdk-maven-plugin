@@ -4,11 +4,11 @@
  */
 
 import org.jetbrains.teamcity.maven.sdk.AbstractTeamCityMojo
+import org.jetbrains.teamcity.maven.sdk.TCDirectoryState
+import org.jetbrains.teamcity.maven.sdk.test.TestWithTempFiles
 import org.junit.Test
 import java.io.File
-import org.jetbrains.teamcity.maven.sdk.TCDirectoryState
 import kotlin.test.assertEquals
-import org.jetbrains.teamcity.maven.sdk.test.TestWithTempFiles
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -17,37 +17,37 @@ public class TCMojoTest(): TestWithTempFiles() {
 
     val default_8_0_2_path = "src/test/resources/defaultServerLocation/servers/8.0.2"
 
-    Test
+    @Test
     public fun checkTeamCityByDefaultPath() {
         assertEquals(TCDirectoryState.GOOD, MockTCMojo().checkDir(File(default_8_0_2_path)))
     }
 
-    Test
+    @Test
     public fun checkTeamCityWithWrongVersion() {
         assertEquals(TCDirectoryState.MISVERSION, MockTCMojo("8.1").checkDir(File(default_8_0_2_path)))
     }
 
-    Test
+    @Test
     public fun checkTeamCityWrongDirectory() {
         assertEquals(TCDirectoryState.BAD, MockTCMojo().checkDir(File("unexistingLocation")))
     }
 
-    Test
+    @Test
     public fun silentDownloadTeamCity() {
         val tcDir = myTempFiles.newFolder("TC_DIR")
         val mockTCMojo = MockTCMojo().setSilentDownload(true)
-                .setDownloadSource(File("src/test/resources").getAbsoluteFile().toURI().toURL().toString())
+                .setDownloadSource(File("src/test/resources").absoluteFile.toURI().toURL().toString())
                 .setTeamCityDir(tcDir)
 
         mockTCMojo.execute()
         assertEquals(TCDirectoryState.GOOD, MockTCMojo().checkDir(tcDir))
     }
 
-    Test
+    @Test
     public fun runServerOnly() {
         val tcDir = myTempFiles.newFolder("TC_DIR")
         val mockTCMojo = MockTCMojo().setSilentDownload(true)
-                .setDownloadSource(File("src/test/resources").getAbsoluteFile().toURI().toURL().toString())
+                .setDownloadSource(File("src/test/resources").absoluteFile.toURI().toURL().toString())
                 .setTeamCityDir(tcDir)
                 .setStartAgent(false)
         mockTCMojo.execute()
