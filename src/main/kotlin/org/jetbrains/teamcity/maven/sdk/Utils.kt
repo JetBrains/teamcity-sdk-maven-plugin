@@ -1,20 +1,16 @@
 package org.jetbrains.teamcity.maven.sdk
 
-import java.io.InputStream
-import java.util.concurrent.atomic.AtomicBoolean
-import java.nio.charset.Charset
-import java.io.File
-import org.apache.commons.io.FileUtils
-import java.net.URL
-import org.apache.commons.io.input.CountingInputStream
-import java.nio.channels.ReadableByteChannel
-import java.nio.channels.Channels
-import java.io.FileOutputStream
-import java.io.FileInputStream
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
-import java.util.zip.GZIPInputStream
-import java.io.BufferedInputStream
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.input.CountingInputStream
+import java.io.*
+import java.net.URL
+import java.nio.channels.Channels
+import java.nio.channels.ReadableByteChannel
+import java.nio.charset.Charset
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.zip.GZIPInputStream
 
 /**
  * Created by Nikita.Skvortsov
@@ -103,8 +99,8 @@ class TeamCityRetriever(val teamcitySourceURL: String,
         val counter = createCounter(counterFlag, downloadCounter)
         try {
             counter.start()
-            logInfo("Transferring to temp file ${tempFile.getAbsolutePath()}")
-            fos.getChannel().transferFrom(sourceChannel, 0, java.lang.Long.MAX_VALUE);
+            logInfo("Transferring to temp file ${tempFile.absolutePath}")
+            fos.channel.transferFrom(sourceChannel, 0, java.lang.Long.MAX_VALUE);
         } finally {
             counterFlag.set(false)
             counter.join(1000)
@@ -115,7 +111,7 @@ class TeamCityRetriever(val teamcitySourceURL: String,
     }
 
     public fun doExtractTeamCity(archive: File, destination: File): File {
-        logInfo("Unpacking TeamCity to ${destination.getAbsolutePath()}")
+        logInfo("Unpacking TeamCity to ${destination.absolutePath}")
 
         destination.mkdirs()
         val counterFlag = AtomicBoolean(true)
@@ -128,24 +124,24 @@ class TeamCityRetriever(val teamcitySourceURL: String,
             unpackingCounterThread.start()
             tarInput.eachEntry {
                 val name: String
-                val entryName = it.getName()
+                val entryName = it.name
                 if (entryName.startsWith("TeamCity")) {
                     name = entryName.substring("TeamCity".length())
                 } else {
                     name = entryName
                 }
                 val destPath = File(destination, name)
-                if (it.isDirectory()) {
-                    logDebug("Creating dir ${destPath.getAbsolutePath()}")
+                if (it.isDirectory) {
+                    logDebug("Creating dir ${destPath.absolutePath}")
                     destPath.mkdirs()
                 } else {
-                    logDebug("Creating dir ${destPath.getParentFile()?.getAbsolutePath()}")
-                    destPath.getParentFile()?.mkdirs()
-                    logDebug("Creating file ${destPath.getAbsolutePath()}")
+                    logDebug("Creating dir ${destPath.parentFile?.absolutePath}")
+                    destPath.parentFile?.mkdirs()
+                    logDebug("Creating file ${destPath.absolutePath}")
                     destPath.createNewFile()
                     val destOS = FileOutputStream(destPath)
                     try {
-                        destOS.getChannel().transferFrom(tarChannel, 0, it.getSize())
+                        destOS.channel.transferFrom(tarChannel, 0, it.size)
                         if (it.isExecutable()) {
                             destPath.setExecutable(true)
                         }
@@ -164,15 +160,15 @@ class TeamCityRetriever(val teamcitySourceURL: String,
 
     private fun TarArchiveEntry.isExecutable(): Boolean {
         val EXECUTABLE_BIT_INDEX = 6
-        val executableBit = getMode().getBit(EXECUTABLE_BIT_INDEX)
+        val executableBit = mode.getBit(EXECUTABLE_BIT_INDEX)
         return executableBit == 1
     }
 
     protected fun TarArchiveInputStream.eachEntry(f : (TarArchiveEntry) -> Unit) {
-        var entry = getNextEntry() as TarArchiveEntry?
+        var entry = nextEntry as TarArchiveEntry?
         while (entry != null) {
             f(entry)
-            entry = getNextEntry() as TarArchiveEntry?
+            entry = nextEntry as TarArchiveEntry?
         }
     }
 
@@ -180,7 +176,7 @@ class TeamCityRetriever(val teamcitySourceURL: String,
         return Thread({
             while(flag.get()) {
                 Thread.sleep(1000)
-                print("\r" + FileUtils.byteCountToDisplaySize(counter.getByteCount()))
+                print("\r" + FileUtils.byteCountToDisplaySize(counter.byteCount))
             }
             println()
         })

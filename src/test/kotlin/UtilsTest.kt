@@ -3,21 +3,21 @@
  * date: 03.04.2014.
  */
 
-import org.jetbrains.teamcity.maven.sdk.getBit
-import org.junit.Test
-import org.apache.commons.io.IOUtils
-import org.jetbrains.teamcity.maven.sdk.ThreadedStringReader
-import org.assertj.core.api.Assertions.*
-import org.assertj.core.api.IntegerAssert
 import com.google.common.io.CountingInputStream
+import org.apache.commons.io.IOUtils
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.IntegerAssert
 import org.assertj.core.api.ListAssert
-import java.io.File
-import org.jetbrains.teamcity.maven.sdk.test.TestWithTempFiles
 import org.jetbrains.teamcity.maven.sdk.TeamCityRetriever
+import org.jetbrains.teamcity.maven.sdk.ThreadedStringReader
+import org.jetbrains.teamcity.maven.sdk.getBit
+import org.jetbrains.teamcity.maven.sdk.test.TestWithTempFiles
+import org.junit.Test
+import java.io.File
 
 public class UtilsTest(): TestWithTempFiles()  {
 
-    Test public fun testGetBitExtension() {
+    @Test public fun testGetBitExtension() {
         assertThat(1.getBit(0)).isOne()
         assertThat(1.getBit(1)).isZero()
 
@@ -32,7 +32,7 @@ public class UtilsTest(): TestWithTempFiles()  {
     }
 
 
-    Test public fun testThreadedStringReader() {
+    @Test public fun testThreadedStringReader() {
         assertThatReadOf("SingleString").containsExactly("SingleString")
         assertThatReadOf("OneString\nTwoString").containsExactly("OneString", "TwoString")
         assertThatReadOf("OneString\nTwoString\n").containsExactly("OneString", "TwoString")
@@ -43,7 +43,7 @@ public class UtilsTest(): TestWithTempFiles()  {
         assertThatReadOf("\n\n").containsExactly("","")
     }
 
-    Test
+    @Test
     public fun testUnpackTeamcityArchive() {
         val tempDirectory : File = myTempFiles.newFolder(System.currentTimeMillis().toString())
 
@@ -63,7 +63,7 @@ public class UtilsTest(): TestWithTempFiles()  {
 
         reader.start()
         waitFor {
-            stream.getCount() == text.length().toLong()
+            stream.count == text.length().toLong()
         }
 
         reader.stop()
