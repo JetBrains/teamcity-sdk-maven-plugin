@@ -17,7 +17,7 @@ import java.io.IOException
 @Mojo(name = "init", aggregator = true)
 public class InitTeamCityMojo() : AbstractTeamCityMojo() {
     override fun doExecute() {
-        log info "Init finished"
+        log.info("Init finished")
     }
 }
 
@@ -34,8 +34,8 @@ public class RunTeamCityMojo() : AbstractTeamCityMojo() {
     override fun doExecute() {
         val effectiveDataDir = uploadPluginAgentZip()
 
-        log info "Starting TC in [${teamcityDir?.absolutePath}]"
-        log info "TC data directory is [$effectiveDataDir]"
+        log.info("Starting TC in [${teamcityDir?.absolutePath}]")
+        log.info("TC data directory is [$effectiveDataDir]")
 
         val procBuilder = ProcessBuilder()
                 .directory(teamcityDir)
@@ -48,14 +48,14 @@ public class RunTeamCityMojo() : AbstractTeamCityMojo() {
 
         readOutput(procBuilder.start())
 
-        log info "TeamCity start command issued. Try opening browser at http://localhost:8111"
+        log.info("TeamCity start command issued. Try opening browser at http://localhost:8111")
     }
 }
 
 @Mojo(name = "stop", aggregator = true)
 public class StopTeamCityMojo() : AbstractTeamCityMojo() {
     override fun doExecute() {
-        log info "Stopping TC in [${teamcityDir?.absolutePath}]"
+        log.info("Stopping TC in [${teamcityDir?.absolutePath}]")
         val procBuilder = ProcessBuilder()
                 .directory(teamcityDir)
                 .redirectErrorStream(true)
@@ -70,13 +70,13 @@ public class ReloadJSPMojo() : AbstractTeamCityMojo() {
         val artifactId = project?.artifactId!!
         val sourceJspDir = File("$artifactId-server/src/main/resources/buildServerResources")
         val targetJspDir = File(teamcityDir, "webapps/ROOT/plugins/$artifactId")
-        log info "Trying to cleanup existing resources in $targetJspDir"
+        log.info("Trying to cleanup existing resources in $targetJspDir")
         try {
             FileUtils.cleanDirectory(targetJspDir)
         } catch (e: IOException) {
-            log warn "Failed to clean existing resource. Some old files may have left. Error: ${e.getMessage()}"
+            log.warn("Failed to clean existing resource. Some old files may have left. Error: ${e.message}")
         }
-        log info "Trying to copy jsp pages from $sourceJspDir to  $targetJspDir"
+        log.info("Trying to copy jsp pages from $sourceJspDir to  $targetJspDir")
         FileUtils.copyDirectory(sourceJspDir, targetJspDir, FileFilterUtils.trueFileFilter())
     }
 }
@@ -85,6 +85,6 @@ public class ReloadJSPMojo() : AbstractTeamCityMojo() {
 public class ReloadPluginMojo() : AbstractTeamCityMojo() {
     override fun doExecute() {
         uploadPluginAgentZip()
-        log info "Plugin uploaded. Wait for TeamCity agent to upgrade."
+        log.info("Plugin uploaded. Wait for TeamCity agent to upgrade.")
     }
 }
