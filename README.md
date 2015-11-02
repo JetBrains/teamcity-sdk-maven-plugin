@@ -1,6 +1,5 @@
 TeamCity SDK Maven plugin
 =========================
-[![Build Status](https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:bt402)/statusIcon)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=bt402)
 
 ## Quickstart
 
