@@ -1,6 +1,6 @@
 TeamCity SDK Maven plugin
 =========================
-[![Build Status](https://travis-ci.org/nskvortsov/teamcity-sdk-maven-plugin.svg?branch=master)](https://travis-ci.org/nskvortsov/teamcity-sdk-maven-plugin)
+[![Build Status](https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:bt402)/statusIcon)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=bt402)
 
 ## Quickstart
 
