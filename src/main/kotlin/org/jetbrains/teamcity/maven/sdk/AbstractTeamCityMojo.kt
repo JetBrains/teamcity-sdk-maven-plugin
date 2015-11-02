@@ -53,9 +53,10 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
     protected fun checkTeamCityDirectory(dir: File) {
         when (evalTeamCityDirectory(dir)) {
-            TCDirectoryState.GOOD -> log info "TeamCity $teamcityVersion is located at $teamcityDir"
-            TCDirectoryState.MISVERSION -> log warn "TeamCity verison at [${dir.absolutePath}] is [${getTCVersion(dir)}], but project uses [$teamcityVersion]"
-            TCDirectoryState.BAD -> { log info "TeamCity distribution not found at [${dir.absolutePath}]"
+            TCDirectoryState.GOOD -> log.info("TeamCity $teamcityVersion is located at $teamcityDir")
+            TCDirectoryState.MISVERSION -> log.warn("TeamCity verison at [${dir.absolutePath}] is [${getTCVersion(dir)}], but project uses [$teamcityVersion]")
+            TCDirectoryState.BAD -> {
+                log.info("TeamCity distribution not found at [${dir.absolutePath}]")
                                       downloadTeamCity(dir) }
         }
     }
@@ -65,9 +66,9 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
             val retriever = TeamCityRetriever(teamcitySourceURL, teamcityVersion,
                     { message, debug ->
                         if (debug) {
-                            log debug message
+                            log.debug(message)
                         } else {
-                            log info message
+                            log.info(message)
                         }
                     })
 
@@ -90,7 +91,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     private fun askToDownload(dir: File): Boolean {
         print("Download TeamCity $teamcityVersion to  ${dir.absolutePath}?: Y:")
         val s = readLine()
-        return s?.length() == 0 || s?.toLowerCase()?.first() == 'y'
+        return s?.length == 0 || s?.toLowerCase()?.first() == 'y'
     }
 
     protected fun looksLikeTeamCityDir(dir: File): Boolean = File(dir, "bin/runAll.sh").exists()
@@ -123,7 +124,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
     protected fun readOutput(process: Process): Int {
         val reader = ThreadedStringReader(process.inputStream!!) {
-            log info it
+            log.info(it)
         }.start()
         val returnValue = process.waitFor()
         reader.stop()
@@ -165,7 +166,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
             val dataDirFile = File(effectiveDataDir)
             FileUtils.copyFile(packageFile, File(dataDirFile, "plugins/" + pluginPackageName))
         } else {
-            log warn "Target file [${packageFile.absolutePath}] does not exist. Nothing will be deployed. Did you forget 'package' goal?"
+            log.warn("Target file [${packageFile.absolutePath}] does not exist. Nothing will be deployed. Did you forget 'package' goal?")
         }
         return effectiveDataDir
     }

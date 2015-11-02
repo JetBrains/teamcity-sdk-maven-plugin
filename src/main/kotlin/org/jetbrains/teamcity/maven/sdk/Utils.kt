@@ -44,7 +44,7 @@ class ThreadedStringReader(val stream: InputStream, handler: (String) -> Unit) {
             }
         }
 
-        if (stringBuffer.length() > 0) {
+        if (stringBuffer.length > 0) {
             handler(stringBuffer.toString())
         }
 
@@ -126,7 +126,7 @@ class TeamCityRetriever(val teamcitySourceURL: String,
                 val name: String
                 val entryName = it.name
                 if (entryName.startsWith("TeamCity")) {
-                    name = entryName.substring("TeamCity".length())
+                    name = entryName.substring("TeamCity".length)
                 } else {
                     name = entryName
                 }

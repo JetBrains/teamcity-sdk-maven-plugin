@@ -18,17 +18,17 @@ import java.io.File
 public class UtilsTest(): TestWithTempFiles()  {
 
     @Test public fun testGetBitExtension() {
-        assertThat(1.getBit(0)).isOne()
-        assertThat(1.getBit(1)).isZero()
+        assertThat(1.getBit(0)).isOne
+        assertThat(1.getBit(1)).isZero
 
-        assertThat(3.getBit(0)).isOne()
-        assertThat(3.getBit(1)).isOne()
+        assertThat(3.getBit(0)).isOne
+        assertThat(3.getBit(1)).isOne
 
-        assertThat(Integer.MAX_VALUE.getBit(31)).isZero()
-        assertThat(Integer.MAX_VALUE.getBit(0)).isOne()
-        assertThat(Integer.MAX_VALUE.getBit(30)).isOne()
+        assertThat(Integer.MAX_VALUE.getBit(31)).isZero
+        assertThat(Integer.MAX_VALUE.getBit(0)).isOne
+        assertThat(Integer.MAX_VALUE.getBit(30)).isOne
 
-        assertThat(Integer.MIN_VALUE.getBit(31)).isOne()
+        assertThat(Integer.MIN_VALUE.getBit(31)).isOne
     }
 
 
@@ -63,7 +63,7 @@ public class UtilsTest(): TestWithTempFiles()  {
 
         reader.start()
         waitFor {
-            stream.count == text.length().toLong()
+            stream.count == text.length.toLong()
         }
 
         reader.stop()
@@ -81,7 +81,7 @@ public class UtilsTest(): TestWithTempFiles()  {
         }
     }
 
-    fun IntegerAssert.isOne() {
-        isEqualTo(1)
-    }
+    private val IntegerAssert.isOne: IntegerAssert?
+        get() = isEqualTo(1)
+
 }
