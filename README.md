@@ -18,7 +18,7 @@ Otherwise, make sure you have proper plugin repository configured:
 <pluginRepositories>
   <pluginRepository>
     <id>JetBrains</id>
-    <url>http://repository.jetbrains.com/all</url>
+    <url>http://download.jetbrains.com/teamcity-repository</url>
   </pluginRepository>
 </pluginRepositories>
 ```
