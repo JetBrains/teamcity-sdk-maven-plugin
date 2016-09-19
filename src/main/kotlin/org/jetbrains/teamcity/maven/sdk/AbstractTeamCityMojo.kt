@@ -54,7 +54,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     protected fun checkTeamCityDirectory(dir: File) {
         when (evalTeamCityDirectory(dir)) {
             TCDirectoryState.GOOD -> log.info("TeamCity $teamcityVersion is located at $teamcityDir")
-            TCDirectoryState.MISVERSION -> log.warn("TeamCity verison at [${dir.absolutePath}] is [${getTCVersion(dir)}], but project uses [$teamcityVersion]")
+            TCDirectoryState.MISVERSION -> log.warn("TeamCity version at [${dir.absolutePath}] is [${getTCVersion(dir)}], but project uses [$teamcityVersion]")
             TCDirectoryState.BAD -> {
                 log.info("TeamCity distribution not found at [${dir.absolutePath}]")
                                       downloadTeamCity(dir) }
