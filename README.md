@@ -7,13 +7,13 @@ TeamCity SDK Maven plugin
 
 ## General Info
 
-This Maven plugin allow to control TeamCity instance from command line. It will install developed plugin if it is available. 
+This Maven plugin allow controlling a TeamCity instance from the command line. It will install a developed plugin if it is available. 
 
 The plugin works best when used with projects generated from [maven archetype](http://confluence.jetbrains.com/display/TCD8/Developing+Plugins+Using+Maven#DevelopingPluginsUsingMaven-MavenArchetypes) for TeamCity plugins.
 
 If you have such a project, you can skip to [plugin goals](#plugin-goals)
 
-Otherwise, make sure you have proper plugin repository configured:
+Otherwise, make sure you have the proper plugin repository configured:
 ```xml
 <pluginRepositories>
   <pluginRepository>
@@ -38,35 +38,35 @@ and add the plugin itself:
     </plugins>
   </build>
 ```
-to root pom.xml file and run
+to the root pom.xml file and run
 
 ```mvn package tc-sdk:start```
 
 You will get:
-* Server with your plugin and debug port 10111
-* Agent with your plugin and debug port  10112
+* A Server with your plugin and debug port 10111
+* An Agent with your plugin and debug port  10112
 
 ### Plugin goals
 
-The plugin adds following goadls:
+The plugin adds following goals:
 
-* ```mvn tc-sdk:init``` will check if TeamCity is available in target location and it's version is same as used in the maven project. If it is missing, the plugin can download distribution and unpack it for you.
-* ```mvn tc-sdk:start``` will do the init check (see above), deploy your plugin to the data directory, and start TeamCity server and agent
-* ```mvn tc-sdk:stop``` will do the init check (once again) and will issue stop command to both server and agent.
-* ```mvn tc-sdk:reload``` will do the init check and will copy your plugin to the data directory. Can be useful to quickly deploy agent-side changes without need to restart the whole server, as TeamCity will automatically update the agent with new plugin version.
+* ```mvn tc-sdk:init``` will check if TeamCity is available in the target location and its version is the same as used in the maven project. If it is missing, the plugin can download the distribution and unpack it for you.
+* ```mvn tc-sdk:start``` will do the init check (see above), deploy your plugin to the data directory, and start a TeamCity server and agent
+* ```mvn tc-sdk:stop``` will do the init check (once again) and will issue a stop command to both the server and agent.
+* ```mvn tc-sdk:reload``` will do the init check and will copy your plugin to the data directory. Can be useful to quickly deploy agent-side changes without the need to restart the whole server, as TeamCity will automatically update the agent with the new plugin version.
 * ```mvn tc-sdk:reloadResouces``` will do the init check and will copy over your static resources (from <plugin>-server/src/main/resouces/buildServerResources) to target teamcity server. May speedup ui development.
 
-Please note, that TeamCity's startup process is not instant and stop command sent immediately after start may not be processed properly.
+Please note that TeamCity startup process is not instant and the stop command sent immediately after the start may not be processed properly.
 
 ### Plugin settings
 
-The plugin is highly configurable. See the list of options below, along with default values. "User properties" are used to pass values from commandline (e.g., ```mvn tc-sdk:init -DteamcityVersion=8.1.1```)
+The plugin is highly configurable. See the list of options below, along with the default values. "User properties" are used to pass values from the command line (e.g., ```mvn tc-sdk:init -DteamcityVersion=8.1.1```)
 
-- ```teamcityDir```	path to TeamCity installation. Relative path will be resolved against ```${project.baseDir}```
+- ```teamcityDir```	path to the TeamCity installation. A relative path will be resolved against ```${project.baseDir}```
  - Default value is: servers/${teamcity-version}
  - User property is: teamcityDir
 
-- ```dataDirectory``` 	path to data directory to use with TeamCity. Relative path will be resolved against TeamCity installation path.
+- ```dataDirectory``` 	path to the data directory to be used with TeamCity. A relative path will be resolved against the TeamCity installation path.
  - Default value is: .datadir
  - User property is: teamcityDataDir
 
@@ -74,23 +74,23 @@ The plugin is highly configurable. See the list of options below, along with def
  - Default value is: ${teamcity-version}
  - User property is: teamcityVersion
 
-- ```serverDebugStr``` 	additional options that will be passed to TeamCity server on startup. Customize this property if you want to change debug port or other values
+- ```serverDebugStr``` 	additional options that will be passed to the TeamCity server on startup. Customize this property if you want to change the debug port or other values
  - Default value is: -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=10111 -Dteamcity.development.mode=true
  - User property is: serverDebugStr
 
-- ```agentDebugStr``` 	additional options that will be passed to TeamCity agent on startup. Customize this property if you want to change debug port or other values
+- ```agentDebugStr``` 	additional options that will be passed to the TeamCity agent on startup. Customize this property if you want to change the debug port or other values
  - Default value is: -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=10112
  - User property is: agentDebugStr
 
-- ```downloadQuietly``` do not ask user and download TeamCity without any notifications
+- ```downloadQuietly``` do not ask the user and download TeamCity without any notifications
  - Default value is: false
  - User property is: downloadQuietly
 
-- ```teamcitySourceURL``` base part of URL that will be used to download TeamCity distribution. Plugin will append "/TeamCity-<version>.tar.gz" to it (e.g. http://download.jetbrains.com/teamcity/TeamCity-8.1.tar.gz)
+- ```teamcitySourceURL``` base part of the URL that will be used to download the TeamCity distribution. The plugin will append "/TeamCity-<version>.tar.gz" to it (e.g. http://download.jetbrains.com/teamcity/TeamCity-8.1.tar.gz)
  - Default value is: http://download.jetbrains.com/teamcity
  - User property is: teamcitySourceURL
 
-- ```startAgent``` option not to start agent
+- ```startAgent``` option not to start an agent
  - Default value is: true
  - User property is: startAgent
 
