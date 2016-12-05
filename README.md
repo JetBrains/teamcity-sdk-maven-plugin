@@ -9,7 +9,7 @@ TeamCity SDK Maven plugin
 
 This Maven plugin allows controlling a TeamCity instance from the command line. It will install a developed plugin if it is available. 
 
-The plugin works best when used with projects generated from [maven archetype](http://confluence.jetbrains.com/display/TCD8/Developing+Plugins+Using+Maven#DevelopingPluginsUsingMaven-MavenArchetypes) for TeamCity plugins.
+The plugin works best when used with projects generated from [maven archetype](http://confluence.jetbrains.com/display/TCDL/Developing+Plugins+Using+Maven#DevelopingPluginsUsingMaven-MavenArchetypes) for TeamCity plugins.
 
 If you have such a project, you can skip to [plugin goals](#plugin-goals)
 
@@ -60,7 +60,7 @@ Please note that TeamCity startup process is not instant and the stop command se
 
 ### Plugin settings
 
-The plugin is highly configurable. See the list of options below, along with the default values. "User properties" are used to pass values from the command line (e.g., ```mvn tc-sdk:init -DteamcityVersion=8.1.1```)
+The plugin is highly configurable. See the list of options below, along with the default values. "User properties" are used to pass values from the command line (e.g., ```mvn tc-sdk:init -DteamcityVersion=10.0```)
 
 - ```teamcityDir```	path to the TeamCity installation. A relative path will be resolved against ```${project.baseDir}```
  - Default value is: servers/${teamcity-version}
@@ -70,7 +70,7 @@ The plugin is highly configurable. See the list of options below, along with the
  - Default value is: .datadir
  - User property is: teamcityDataDir
 
-- ```teamcityVersion``` TeamCity version, e.g. 8.0
+- ```teamcityVersion``` TeamCity version, e.g. 10.0
  - Default value is: ${teamcity-version}
  - User property is: teamcityVersion
 
@@ -86,7 +86,7 @@ The plugin is highly configurable. See the list of options below, along with the
  - Default value is: false
  - User property is: downloadQuietly
 
-- ```teamcitySourceURL``` base part of the URL that will be used to download the TeamCity distribution. The plugin will append "/TeamCity-<version>.tar.gz" to it (e.g. http://download.jetbrains.com/teamcity/TeamCity-8.1.tar.gz)
+- ```teamcitySourceURL``` base part of the URL that will be used to download the TeamCity distribution. The plugin will append "/TeamCity-<version>.tar.gz" to it (e.g. http://download.jetbrains.com/teamcity/TeamCity-10.0.tar.gz)
  - Default value is: http://download.jetbrains.com/teamcity
  - User property is: teamcitySourceURL
 
