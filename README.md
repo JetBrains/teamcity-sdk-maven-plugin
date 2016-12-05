@@ -7,7 +7,7 @@ TeamCity SDK Maven plugin
 
 ## General Info
 
-This Maven plugin allow controlling a TeamCity instance from the command line. It will install a developed plugin if it is available. 
+This Maven plugin allows controlling a TeamCity instance from the command line. It will install a developed plugin if it is available. 
 
 The plugin works best when used with projects generated from [maven archetype](http://confluence.jetbrains.com/display/TCD8/Developing+Plugins+Using+Maven#DevelopingPluginsUsingMaven-MavenArchetypes) for TeamCity plugins.
 
@@ -48,7 +48,7 @@ You will get:
 
 ### Plugin goals
 
-The plugin adds following goals:
+The plugin adds the following goals:
 
 * ```mvn tc-sdk:init``` will check if TeamCity is available in the target location and its version is the same as used in the maven project. If it is missing, the plugin can download the distribution and unpack it for you.
 * ```mvn tc-sdk:start``` will do the init check (see above), deploy your plugin to the data directory, and start a TeamCity server and agent
@@ -90,7 +90,7 @@ The plugin is highly configurable. See the list of options below, along with the
  - Default value is: http://download.jetbrains.com/teamcity
  - User property is: teamcitySourceURL
 
-- ```startAgent``` option not to start an agent
+- ```startAgent``` the option to start a TeamCity build agent
  - Default value is: true
  - User property is: startAgent
 
