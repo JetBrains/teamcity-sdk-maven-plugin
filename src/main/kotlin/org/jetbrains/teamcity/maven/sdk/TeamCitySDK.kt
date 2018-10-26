@@ -94,14 +94,17 @@ public class ReloadPluginMojo() : AbstractTeamCityMojo() {
 @Mojo(name = "reload", aggregator = true)
 class ReloadPluginInRuntimeMojo : AbstractTeamCityMojo() {
     override fun doExecute() {
-        if (teamcityVersion.split(".")[0].toInt() < 2018) {
+        var doOfflineReload = false;
+        val split = teamcityVersion.split(".")
+        if (split.size < 2 || split[0].toInt() < 2018 || split[1].toInt() < 2) {
             log.info("Cannot reload plugin in runtime for TeamCity version less then 2018.2. Will perform reloadAgent. ")
-            uploadPluginAgentZip()
-            log.info("Plugin uploaded. Wait for TeamCity agent to upgrade.")
-            return
+            doOfflineReload = true
+        } else if (!isPluginReloadable()) {
+            log.info("Plugin is not marked as reloadable. Will perform reloadAgent. ")
+            doOfflineReload = true
         }
-        if (teamcityVersion.split(".")[1].toInt() < 2) {
-            log.info("Cannot reload plugin in runtime for TeamCity version less then 2018.2. Will perform reloadAgent. ")
+
+        if (doOfflineReload) {
             uploadPluginAgentZip()
             log.info("Plugin uploaded. Wait for TeamCity agent to upgrade.")
             return

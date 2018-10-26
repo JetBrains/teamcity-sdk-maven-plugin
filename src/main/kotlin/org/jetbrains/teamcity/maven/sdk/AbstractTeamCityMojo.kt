@@ -268,6 +268,16 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
             File(teamcityDir, dataDirectory)
         }
     }
+
+    protected fun isPluginReloadable(): Boolean {
+        val pluginDescriptor = File(project!!.basedir, "teamcity-plugin.xml")
+        if (!pluginDescriptor.exists()) {
+            log.warn("Plugin descriptor wan't found in ${pluginDescriptor.absolutePath}")
+            return false
+        }
+
+        return pluginDescriptor.readText(Charset.forName("UTF-8")).contains("allow-runtime-reload=\"true\"")
+    }
 }
 
 public enum class TCDirectoryState {
