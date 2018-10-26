@@ -200,7 +200,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
         val authToken = "Basic " + String(Base64.getEncoder().encode("$username:$password".toByteArray(Charset.forName("UTF-8"))))
 
-        val url = URL("http://$serverAddress/httpAuth/admin/plugins.html?action=setEnabled&enabled=false&waitUnload=true&pluginPath=%3CTeamCity%20Data%20Directory%3E/plugins/$pluginPackageName")
+        val url = URL("http://$serverAddress/httpAuth/admin/plugins.html?action=setEnabled&enabled=false&pluginPath=%3CTeamCity%20Data%20Directory%3E/plugins/$pluginPackageName")
         log.debug("Sending " + url.toString() + "...")
         val disableRequest = url.openConnection()
         (disableRequest as HttpURLConnection).requestMethod = "POST"
