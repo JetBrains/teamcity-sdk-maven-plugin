@@ -8,6 +8,8 @@ package org.jetbrains.teamcity.maven.sdk
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.filefilter.FileFilterUtils
+import org.apache.maven.plugin.MojoExecutionException
+import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugins.annotations.Mojo
 import org.apache.maven.plugins.annotations.Parameter
 import java.io.File
@@ -24,7 +26,7 @@ public class InitTeamCityMojo() : AbstractTeamCityMojo() {
 @Mojo(name = "start", aggregator = true)
 public class RunTeamCityMojo() : AbstractTeamCityMojo() {
 
-    @Parameter( defaultValue = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=10111 -Dteamcity.development.mode=true", property = "serverDebugStr", required = true)
+    @Parameter( defaultValue = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=10111 -Dteamcity.development.mode=true -Dteamcity.superUser.token.saveToFile=true", property = "serverDebugStr", required = true)
     private var serverDebugStr: String = ""
 
     @Parameter( defaultValue = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=10112", property = "agentDebugStr", required = true)
@@ -81,10 +83,33 @@ public class ReloadJSPMojo() : AbstractTeamCityMojo() {
     }
 }
 
-@Mojo(name = "reload", aggregator = true)
+@Mojo(name = "reloadAgent", aggregator = true)
 public class ReloadPluginMojo() : AbstractTeamCityMojo() {
     override fun doExecute() {
         uploadPluginAgentZip()
         log.info("Plugin uploaded. Wait for TeamCity agent to upgrade.")
+    }
+}
+
+@Mojo(name = "reload", aggregator = true)
+class ReloadPluginInRuntimeMojo : AbstractTeamCityMojo() {
+    override fun doExecute() {
+        if (teamcityVersion.split(".")[0].toInt() < 2018) {
+            log.info("Cannot reload plugin in runtime for TeamCity version less then 2018.2. Will perform reloadAgent. ")
+            uploadPluginAgentZip()
+            log.info("Plugin uploaded. Wait for TeamCity agent to upgrade.")
+            return
+        }
+        if (teamcityVersion.split(".")[1].toInt() < 2) {
+            log.info("Cannot reload plugin in runtime for TeamCity version less then 2018.2. Will perform reloadAgent. ")
+            uploadPluginAgentZip()
+            log.info("Plugin uploaded. Wait for TeamCity agent to upgrade.")
+            return
+        }
+
+        if (!reloadPluginInRuntime()) {
+            uploadPluginAgentZip()
+            throw MojoFailureException("Reload plugin failed. A new plugin zip was uploaded, please restart the server. ")
+        }
     }
 }

@@ -6,6 +6,11 @@ import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
 import java.io.File
+import java.io.IOException
+import java.net.ConnectException
+import java.net.HttpURLConnection
+import java.net.URL
+import java.nio.charset.Charset
 import java.util.*
 import java.util.jar.JarFile
 
@@ -31,6 +36,15 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
     @Parameter ( defaultValue = "true", property = "startAgent")
     protected var startAgent: Boolean = true
+
+    @Parameter(defaultValue = "localhost:8111")
+    protected var serverAddress = ""
+
+    @Parameter(defaultValue = "")
+    protected var username = ""
+
+    @Parameter(defaultValue = "")
+    protected var password = ""
 
     /**
      * Location of the TeamCity data directory.
@@ -155,12 +169,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
         val packageFile = File(proj.build!!.directory!!, pluginPackageName)
 
-        val effectiveDataDir =
-                (if (File(dataDirectory).isAbsolute) {
-                    File(dataDirectory)
-                } else {
-                    File(teamcityDir, dataDirectory)
-                }).absolutePath
+        val effectiveDataDir = getDataDir().absolutePath
 
         if (packageFile.exists()) {
             val dataDirFile = File(effectiveDataDir)
@@ -169,6 +178,95 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
             log.warn("Target file [${packageFile.absolutePath}] does not exist. Nothing will be deployed. Did you forget 'package' goal?")
         }
         return effectiveDataDir
+    }
+
+    protected fun reloadPluginInRuntime(): Boolean {
+        if (username.isEmpty()) {
+            log.debug("No username provided, looking for maintenance token")
+            val tokenFile = File(getDataDir(), "system${File.separator}pluginData${File.separator}superUser${File.separator}token.txt")
+            if (!tokenFile.isFile) {
+                log.warn("Neither username provider nor maintenance token file exists. Cannot send plugin reload request. Check that server has already started with '-Dteamcity.superUser.token.saveToFile=true' parameter or provide username and password.")
+                return false
+            } else {
+                try {
+                    password = tokenFile.readText().toLong().toString()
+                    log.debug("Using $password maintenance token to authenticate")
+                } catch (ex: NumberFormatException) {
+                    log.warn("Malformed maintenance token: should contain a number")
+                    return false
+                }
+            }
+        }
+
+        val authToken = "Basic " + String(Base64.getEncoder().encode("$username:$password".toByteArray(Charset.forName("UTF-8"))))
+
+        val url = URL("http://$serverAddress/httpAuth/admin/plugins.html?action=setEnabled&enabled=false&waitUnload=true&pluginPath=%3CTeamCity%20Data%20Directory%3E/plugins/$pluginPackageName")
+        log.debug("Sending " + url.toString() + "...")
+        val disableRequest = url.openConnection()
+        (disableRequest as HttpURLConnection).requestMethod = "POST"
+        disableRequest.setRequestProperty ("Authorization", authToken)
+
+        try {
+            disableRequest.getInputStream().use {
+                val result = it.buffered().bufferedReader(Charset.defaultCharset()).readLine()
+                if (!result.contains("Plugin unloaded successfully")) {
+                    if (result.contains("Plugin unloaded partially")) {
+                        log.warn("Plugin unloaded partially - some parts could still be running. Server restart could be needed. Check all resources are released and threads are stopped on server shutdown. ")
+                    } else {
+                        log.warn(result)
+                        return false
+                    }
+                } else {
+                    log.info("Plugin successfully unloaded")
+                }
+            }
+        } catch (ex: ConnectException) {
+            log.warn("Cannot find running server on http://$serverAddress. Is server started?")
+            return false;
+        } catch (ex: IOException) {
+            when (disableRequest.responseCode) {
+                401 -> log.warn("Cannot authenticate server on http://$serverAddress with " +
+                        if (username.isEmpty())
+                            "maintenance token $password. Check that server has already started with '-Dteamcity.superUser.token.saveToFile=true' parameter or provide username and password."
+                        else
+                            "provided credentials.")
+            }
+            log.warn("Cannot connect to the server on http://$serverAddress: ${disableRequest.responseCode}", ex)
+            return false
+        }
+
+        uploadPluginAgentZip()
+
+        val urlDisable = URL("http://$serverAddress/httpAuth/admin/plugins.html?action=setEnabled&enabled=true&pluginPath=%3CTeamCity%20Data%20Directory%3E/plugins/$pluginPackageName")
+        log.debug("Sending " + urlDisable.toString() + "...")
+        val enableRequest = urlDisable.openConnection()
+        (enableRequest as HttpURLConnection).requestMethod = "POST"
+        enableRequest.setRequestProperty ("Authorization", authToken)
+        try {
+            enableRequest.getInputStream().use {
+                val result = it.buffered().bufferedReader(Charset.defaultCharset()).readLine()
+
+                if (!result.contains("Plugin loaded successfully")) {
+                    log.warn(result)
+                    return false
+                } else {
+                    log.info("Plugin successfully loaded")
+                }
+            }
+        } catch(ex: IOException) {
+            log.warn("Cannot connect to the server on http://$serverAddress: ${disableRequest.responseCode}", ex)
+            return false
+        }
+
+        return true
+    }
+
+    private fun getDataDir(): File {
+        return if (File(dataDirectory).isAbsolute) {
+            File(dataDirectory)
+        } else {
+            File(teamcityDir, dataDirectory)
+        }
     }
 }
 
