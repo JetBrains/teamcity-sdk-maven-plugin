@@ -94,13 +94,13 @@ public class ReloadPluginMojo() : AbstractTeamCityMojo() {
 @Mojo(name = "reload", aggregator = true)
 class ReloadPluginInRuntimeMojo : AbstractTeamCityMojo() {
     override fun doExecute() {
-        var doOfflineReload = false;
+        var doOfflineReload = false
         val split = teamcityVersion.split(".")
         if (split.size < 2 || split[0].toInt() < 2018 || split[1].toInt() < 2) {
-            log.info("Cannot reload plugin in runtime for TeamCity version less then 2018.2. Will perform reloadAgent. ")
+            log.info("Cannot reload plugin in runtime for TeamCity version less then 2018.2. Will reload agent side of the plugin. Restart the server to reload server side of the plugin. ")
             doOfflineReload = true
         } else if (!isPluginReloadable()) {
-            log.info("Plugin is not marked as reloadable. Will perform reloadAgent. ")
+            log.info("Plugin is not marked as reloadable. Will reload agent side of the plugin. Restart the server to reload server side of the plugin. ")
             doOfflineReload = true
         }
 
