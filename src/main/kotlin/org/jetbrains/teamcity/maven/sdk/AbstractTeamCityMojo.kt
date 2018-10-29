@@ -200,9 +200,9 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
         val authToken = "Basic " + String(Base64.getEncoder().encode("$username:$password".toByteArray(Charset.forName("UTF-8"))))
 
-        val url = URL("http://$serverAddress/httpAuth/admin/plugins.html?action=setEnabled&enabled=false&pluginPath=%3CTeamCity%20Data%20Directory%3E/plugins/$pluginPackageName")
-        log.debug("Sending " + url.toString() + "...")
-        val disableRequest = url.openConnection()
+        val enableAction = getPluginReloadURL(false)
+        log.debug("Sending " + enableAction.toString() + "...")
+        val disableRequest = enableAction.openConnection()
         (disableRequest as HttpURLConnection).requestMethod = "POST"
         disableRequest.setRequestProperty ("Authorization", authToken)
 
@@ -222,7 +222,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
             }
         } catch (ex: ConnectException) {
             log.warn("Cannot find running server on http://$serverAddress. Is server started?")
-            return false;
+            return false
         } catch (ex: IOException) {
             when (disableRequest.responseCode) {
                 401 -> log.warn("Cannot authenticate server on http://$serverAddress with " +
@@ -237,9 +237,9 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
         uploadPluginAgentZip()
 
-        val urlDisable = URL("http://$serverAddress/httpAuth/admin/plugins.html?action=setEnabled&enabled=true&pluginPath=%3CTeamCity%20Data%20Directory%3E/plugins/$pluginPackageName")
-        log.debug("Sending " + urlDisable.toString() + "...")
-        val enableRequest = urlDisable.openConnection()
+        val disableAction = getPluginReloadURL(true)
+        log.debug("Sending " + disableAction.toString() + "...")
+        val enableRequest = disableAction.openConnection()
         (enableRequest as HttpURLConnection).requestMethod = "POST"
         enableRequest.setRequestProperty ("Authorization", authToken)
         try {
@@ -260,6 +260,9 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
         return true
     }
+
+    private fun getPluginReloadURL(action: Boolean) =
+            URL("http://$serverAddress/httpAuth/admin/plugins.html?action=setEnabled&enabled=$action&pluginPath=%3CTeamCity%20Data%20Directory%3E/plugins/$pluginPackageName")
 
     private fun getDataDir(): File {
         return if (File(dataDirectory).isAbsolute) {
