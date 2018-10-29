@@ -200,9 +200,9 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
         val authToken = "Basic " + String(Base64.getEncoder().encode("$username:$password".toByteArray(Charset.forName("UTF-8"))))
 
-        val enableAction = getPluginReloadURL(false)
-        log.debug("Sending " + enableAction.toString() + "...")
-        val disableRequest = enableAction.openConnection()
+        val disableAction = getPluginReloadURL(false)
+        log.debug("Sending " + disableAction.toString() + "...")
+        val disableRequest = disableAction.openConnection()
         (disableRequest as HttpURLConnection).requestMethod = "POST"
         disableRequest.setRequestProperty ("Authorization", authToken)
 
@@ -237,9 +237,9 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
         uploadPluginAgentZip()
 
-        val disableAction = getPluginReloadURL(true)
-        log.debug("Sending " + disableAction.toString() + "...")
-        val enableRequest = disableAction.openConnection()
+        val enableAction = getPluginReloadURL(true)
+        log.debug("Sending " + enableAction.toString() + "...")
+        val enableRequest = enableAction.openConnection()
         (enableRequest as HttpURLConnection).requestMethod = "POST"
         enableRequest.setRequestProperty ("Authorization", authToken)
         try {
