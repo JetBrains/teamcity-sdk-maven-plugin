@@ -8,13 +8,13 @@
 
     <name>TeamCity SDK Maven Plugin</name>
     <description>Maven plugin to support development of plugins for TeamCity CI server</description>
-    <url>http://github.com/nskvortsov/teamcity-sdk-maven-plugin</url>
+    <url>https://github.com/JetBrains/teamcity-sdk-maven-plugin</url>
     <prerequisites>
         <maven>3.0.4</maven>
     </prerequisites>
     <issueManagement>
         <system>GitHub Issues</system>
-        <url>https://github.com/nskvortsov/teamcity-sdk-maven-plugin/issues</url>
+        <url>https://github.com/JetBrains/teamcity-sdk-maven-plugin/issues</url>
     </issueManagement>
     <distributionManagement>
       <repository>
