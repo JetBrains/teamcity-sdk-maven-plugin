@@ -20,7 +20,7 @@
       <repository>
         <id>teamcity.repo</id>
         <name>TeamCity Repository</name>
-        <url>http://repository.jetbrains.com/teamcity</url>
+        <url>https://download.jetbrains.com/teamcity-repository</url>
       </repository>
     </distributionManagement>
     <inceptionYear>2014</inceptionYear>
