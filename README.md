@@ -20,7 +20,7 @@ Otherwise, make sure you have the proper plugin repository configured:
 <pluginRepositories>
   <pluginRepository>
     <id>JetBrains</id>
-    <url>http://download.jetbrains.com/teamcity-repository</url>
+    <url>https://download.jetbrains.com/teamcity-repository</url>
   </pluginRepository>
 </pluginRepositories>
 ```
@@ -89,8 +89,8 @@ The plugin is highly configurable. See the list of options below, along with the
  - Default value is: false
  - User property is: downloadQuietly
 
-- ```teamcitySourceURL``` base part of the URL that will be used to download the TeamCity distribution. The plugin will append "/TeamCity-<version>.tar.gz" to it (e.g. http://download.jetbrains.com/teamcity/TeamCity-10.0.tar.gz)
- - Default value is: http://download.jetbrains.com/teamcity
+- ```teamcitySourceURL``` base part of the URL that will be used to download the TeamCity distribution. The plugin will append "/TeamCity-<version>.tar.gz" to it (e.g. https://download.jetbrains.com/teamcity/TeamCity-10.0.tar.gz)
+ - Default value is: https://download.jetbrains.com/teamcity
  - User property is: teamcitySourceURL
 
 - ```startAgent``` the option to start a TeamCity build agent
