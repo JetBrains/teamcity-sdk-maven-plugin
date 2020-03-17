@@ -11,7 +11,7 @@ TeamCity SDK Maven plugin
 
 This Maven plugin allows controlling a TeamCity instance from the command line. It will install a developed plugin if it is available. 
 
-The plugin works best when used with projects generated from [maven archetype](http://confluence.jetbrains.com/display/TCDL/Developing+Plugins+Using+Maven#DevelopingPluginsUsingMaven-MavenArchetypes) for TeamCity plugins.
+The plugin works best when used with projects generated from [maven archetype](https://plugins.jetbrains.com/docs/teamcity/developing-plugins-using-maven.html#DevelopingPluginsUsingMaven-MavenArchetypes) for TeamCity plugins.
 
 If you have such a project, you can skip to [plugin goals](#plugin-goals)
 
