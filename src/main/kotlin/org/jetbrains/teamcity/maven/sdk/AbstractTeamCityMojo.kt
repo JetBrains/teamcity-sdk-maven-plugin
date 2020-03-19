@@ -44,7 +44,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     @Parameter( defaultValue = "false", property = "downloadQuietly", required = true)
     protected var downloadQuietly: Boolean = false
 
-    @Parameter( defaultValue = "http://download.jetbrains.com/teamcity", property = "teamcitySourceURL", required = true)
+    @Parameter( defaultValue = "https://download.jetbrains.com/teamcity", property = "teamcitySourceURL", required = true)
     protected var teamcitySourceURL: String = ""
 
     @Parameter( defaultValue = "\${project.artifactId}.zip")
