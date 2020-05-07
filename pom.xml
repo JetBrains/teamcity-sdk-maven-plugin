@@ -19,7 +19,7 @@
 
     <groupId>org.jetbrains.teamcity</groupId>
     <artifactId>teamcity-sdk-maven-plugin</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>${teamcity-sdk-maven-plugin.version}</version>
     <packaging>maven-plugin</packaging>
 
     <name>TeamCity SDK Maven Plugin</name>
@@ -59,6 +59,7 @@
 
     <properties>
         <kotlin.version>1.0.0</kotlin.version>
+        <teamcity-sdk-maven-plugin.version>0.5-SNAPSHOT</teamcity-sdk-maven-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
