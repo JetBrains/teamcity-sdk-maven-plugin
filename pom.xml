@@ -14,7 +14,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jetbrains.teamcity</groupId>
@@ -33,19 +34,19 @@
         <url>https://github.com/JetBrains/teamcity-sdk-maven-plugin/issues</url>
     </issueManagement>
     <distributionManagement>
-      <repository>
-        <id>teamcity.repo</id>
-        <name>TeamCity Repository</name>
-        <url>https://download.jetbrains.com/teamcity-repository</url>
-      </repository>
+        <repository>
+            <id>jetbrains.teamcity.repo</id>
+            <name>TeamCity Repository</name>
+            <url>ftp://download.labs.intellij.net</url>
+        </repository>
     </distributionManagement>
     <inceptionYear>2014</inceptionYear>
     <scm>
         <connection>scm:git:git@github.com:nskvortsov/teamcity-sdk-maven-plugin.git</connection>
         <url>scm:git:git@github.com:nskvortsov/teamcity-sdk-maven-plugin.git</url>
         <developerConnection>scm:git:git@github.com:nskvortsov/teamcity-sdk-maven-plugin.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
     <reporting>
         <plugins>
             <plugin>
@@ -121,16 +122,16 @@
     </dependencies>
 
     <build>
-	<extensions>
-           <!-- Enabling the use of FTP -->
-           <extension>
-               <groupId>org.apache.maven.wagon</groupId>
-               <artifactId>wagon-ftp</artifactId>
-               <version>1.0-beta-6</version>
-           </extension>
+        <extensions>
+            <!-- Enabling the use of FTP -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ftp</artifactId>
+                <version>2.10</version>
+            </extension>
         </extensions>
         <plugins>
-	    <plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.1</version>
