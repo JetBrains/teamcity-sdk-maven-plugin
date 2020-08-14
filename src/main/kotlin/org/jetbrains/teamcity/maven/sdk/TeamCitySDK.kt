@@ -87,7 +87,7 @@ public class ReloadJSPMojo() : AbstractTeamCityMojo() {
     override fun doExecute() {
         val artifactId = project?.artifactId!!
         val sourceJspDir = File("$artifactId-server/src/main/resources/buildServerResources")
-        val targetJspDir = File(teamcityDir, "webapps/ROOT/plugins/$artifactId")
+        val targetJspDir = File(teamcityDir, "webapps/$contextName/plugins/$artifactId")
         log.info("Trying to cleanup existing resources in $targetJspDir")
         try {
             FileUtils.cleanDirectory(targetJspDir)
