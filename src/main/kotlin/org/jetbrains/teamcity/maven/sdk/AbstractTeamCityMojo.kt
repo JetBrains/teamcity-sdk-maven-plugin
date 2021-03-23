@@ -74,6 +74,12 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     @Parameter( defaultValue = "\${project}", readonly = true)
     protected var project : MavenProject? = null
 
+    /**
+     * Name of the web application context
+     */
+    @Parameter( defaultValue = "ROOT", property = "contextName", required = false)
+    protected var contextName: String = "ROOT";
+
     override fun execute() {
         checkTeamCityDirectory(teamcityDir!!)
         doExecute()
@@ -129,7 +135,7 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
     private fun wrongTeamCityVersion(dir: File) = !getTCVersion(dir).equals(teamcityVersion)
 
     protected fun getTCVersion(teamcityDir: File): String {
-        var commonAPIjar = File(teamcityDir, "webapps/ROOT/WEB-INF/lib/common-api.jar")
+        var commonAPIjar = File(teamcityDir, "webapps/$contextName/WEB-INF/lib/common-api.jar")
 
         if (!commonAPIjar.exists() || !commonAPIjar.isFile) {
             throw MojoExecutionException("Can not read TeamCity version. Can not access [${commonAPIjar.absolutePath}]."
