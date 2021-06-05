@@ -32,7 +32,7 @@ and add the plugin itself:
       <plugin>
         <groupId>org.jetbrains.teamcity</groupId>
         <artifactId>teamcity-sdk-maven-plugin</artifactId>
-        <version>0.4</version>
+        <version>0.4.2</version>
         <configuration>
             <teamcityDir>/path/to/tc/distro</teamcityDir> <!-- optional -->
         </configuration>
