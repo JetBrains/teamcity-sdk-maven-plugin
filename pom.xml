@@ -42,9 +42,9 @@
     </distributionManagement>
     <inceptionYear>2014</inceptionYear>
     <scm>
-        <connection>scm:git:git@github.com:nskvortsov/teamcity-sdk-maven-plugin.git</connection>
-        <url>scm:git:git@github.com:nskvortsov/teamcity-sdk-maven-plugin.git</url>
-        <developerConnection>scm:git:git@github.com:nskvortsov/teamcity-sdk-maven-plugin.git</developerConnection>
+        <connection>scm:git:git@github.com:JetBrains/teamcity-sdk-maven-plugin.git</connection>
+        <url>https://github.com/JetBrains/teamcity-sdk-maven-plugin/</url>
+        <developerConnection>scm:git:git@github.com:JetBrains/teamcity-sdk-maven-plugin.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
     <reporting>
@@ -54,7 +54,6 @@
                 <artifactId>maven-plugin-plugin</artifactId>
                 <version>3.2</version>
             </plugin>
-
         </plugins>
     </reporting>
 
