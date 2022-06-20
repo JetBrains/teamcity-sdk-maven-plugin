@@ -59,7 +59,7 @@
     </reporting>
 
     <properties>
-        <kotlin.version>1.3.72</kotlin.version>
+        <kotlin.version>1.6.0</kotlin.version>
         <java.version>1.6</java.version>
         <teamcity-sdk-maven-plugin.version>0.5-SNAPSHOT</teamcity-sdk-maven-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
