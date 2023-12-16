@@ -37,7 +37,7 @@
         <repository>
             <id>jetbrains.teamcity.repo</id>
             <name>TeamCity Repository</name>
-            <url>ftp://download.labs.intellij.net</url>
+            <url>ftps://download.labs.intellij.net</url>
         </repository>
     </distributionManagement>
     <inceptionYear>2014</inceptionYear>
