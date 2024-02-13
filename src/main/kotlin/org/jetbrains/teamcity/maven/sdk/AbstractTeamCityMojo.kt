@@ -3,10 +3,12 @@
 package org.jetbrains.teamcity.maven.sdk
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.IOUtils
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
+import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.IOException
 import java.net.ConnectException
@@ -15,6 +17,7 @@ import java.net.URL
 import java.nio.charset.Charset
 import java.util.*
 import java.util.jar.JarFile
+import java.util.regex.Pattern
 
 
 public abstract class AbstractTeamCityMojo() : AbstractMojo() {
@@ -125,10 +128,19 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
             if (zipEntry == null) {
                 throw MojoExecutionException("Failed to read TeamCity's version from [${commonAPIjar.absolutePath}]. Please, verify your intallation.")
             } else {
+                // https://bugs.openjdk.org/browse/JDK-8214820 has to replace inline DOCTYPE to proper reference to a dtd
                 val versionPropertiesStream = jarFile.getInputStream(zipEntry)
+                var serverVersionProperties = IOUtils.toString(versionPropertiesStream)
+                if (!serverVersionProperties.contains("<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">")) {
+                    if (serverVersionProperties.contains("<!DOCTYPE properties [")) {
+                        val p: Pattern = Pattern.compile("\\<\\!DOCTYPE properties [\\w\\W]+\\]>", Pattern.MULTILINE)
+                        val m = p.matcher(serverVersionProperties)
+                        serverVersionProperties = m.replaceFirst("<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">");
+                    }
+                }
                 try {
                     val props = Properties()
-                    props.loadFromXML(versionPropertiesStream!!)
+                    props.loadFromXML(ByteArrayInputStream(serverVersionProperties.toByteArray()))
                     return props["Display_Version"] as String
                 } finally {
                     versionPropertiesStream?.close()
