@@ -116,11 +116,10 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
 
     protected fun getTCVersion(teamcityDir: File): String {
         var commonAPIjar = File(teamcityDir, "webapps/ROOT/WEB-INF/lib/common-api.jar")
-
-        if (!commonAPIjar.exists() || !commonAPIjar.isFile) {
-            throw MojoExecutionException("Can not read TeamCity version. Can not access [${commonAPIjar.absolutePath}]."
-            + "Check that [$teamcityDir] points to valid TeamCity installation")
-        } else {
+        // check for new teamcity distributions
+        if (!commonAPIjar.exists() || !commonAPIjar.isFile)
+            commonAPIjar = File(teamcityDir, "webapps/ROOT/WEB-INF/lib/build-version.jar")
+        if (commonAPIjar.exists() && commonAPIjar.isFile) {
             var jarFile = JarFile(commonAPIjar)
             val zipEntry = jarFile.getEntry("serverVersion.properties.xml")
             if (zipEntry == null) {
@@ -135,6 +134,9 @@ public abstract class AbstractTeamCityMojo() : AbstractMojo() {
                     versionPropertiesStream?.close()
                 }
             }
+        } else {
+            throw MojoExecutionException("Can not read TeamCity version. Can not access [${commonAPIjar.absolutePath}]."
+                    + "Check that [$teamcityDir] points to valid TeamCity installation")
         }
     }
 
